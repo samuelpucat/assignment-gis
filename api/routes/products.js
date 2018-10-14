@@ -1,52 +1,15 @@
 const express = require("express");
 const router = express.Router();
+const productsController = require("../controllers/productsController");
 
-router.get("/", (req, res, next) => {
-  res.status(200).json({
-    message: "handling get requess to products"
-  });
-});
+router.route("/").get(productsController.getAll);
 
-router.post("/", (req, res, next) => {
-  const product = {
-    name: req.body.name,
-    price: req.body.price
-  };
-  res.status(201).json({
-    message: "handling post requess to products",
-    createdProduct: product
-  });
-});
+router.route("/").post(productsController.insertOne);
 
-router.get("/:productId", (req, res, next) => {
-  const id = req.params.productId;
-  if (id === "special") {
-    res.status(200).json({
-      message: "special id",
-      id: id
-    });
-  } else {
-    res.status(200).json({
-      message: "id",
-      id: id
-    });
-  }
-});
+router.route("/:productId").get(productsController.getOne);
 
-router.patch("/:productId", (req, res, next) => {
-  const id = req.params.productId;
-  res.status(200).json({
-    message: "update product id",
-    id: id
-  });
-});
+router.route("/:productId").patch(productsController.updateOne);
 
-router.delete("/:productId", (req, res, next) => {
-  const id = req.params.productId;
-  res.status(200).json({
-    message: "delete product id",
-    id: id
-  });
-});
+router.route("/:productId").delete(productsController.deleteOne);
 
 module.exports = router;
