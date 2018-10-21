@@ -12,7 +12,7 @@ export class Root extends React.Component {
     return (
       <div className="container-full-width" style={{height: "100vh", display: "flex", flexDirection: "column"}}>
         <Header />
-        <main style={{height: "100%"}}>
+        <main style={{height: "-webkit-fill-available"}}>
           <Switch>
             <Route exact path="/" component={Map} />
             <Route path="/map" component={Map} />

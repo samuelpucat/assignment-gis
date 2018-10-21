@@ -2,7 +2,7 @@ const db = require("../../db");
 
 exports.getOne = (req, res, next) => {
   const { id } = req.query;
-  const SELECT_HARBOUR_QUERY = 'select "seamark:type",  "seamark:harbour:category", ST_AsGeoJSON(way) as way ' +
+  const SELECT_HARBOUR_QUERY = 'select "seamark:type",  "seamark:harbour:category", ST_AsGeoJSON(ST_Transform(way, 4326)) as way ' +
   "from planet_osm_polygon " +
   "where \"seamark:type\" = 'harbour' and osm_id = $1";
 
@@ -30,7 +30,7 @@ exports.getOne = (req, res, next) => {
 
 exports.getAll = (req, res, next) => {
   db.query(
-    'select "seamark:type",  "seamark:harbour:category", ST_AsGeoJSON(way) as way ' +
+    'select "seamark:type",  "seamark:harbour:category", ST_AsGeoJSON(ST_Transform(way, 4326)) as way ' +
       "from planet_osm_polygon " +
       "where \"seamark:type\" = 'harbour'",
     [],
