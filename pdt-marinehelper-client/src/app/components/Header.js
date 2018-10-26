@@ -7,16 +7,16 @@ export const Header = props => {
     <Navbar.Collapse>
       <Nav>
         {/*harbours*/}
-        <NavItem eventKey={1} onClick={() => history.push("/harbours")}>
+        <NavItem eventKey={1} onClick={() => history.push("/map?scenario=harbours")}>
           Harbours
         </NavItem>
 
         {/*dangers*/}
-        <NavItem eventKey={2} onClick={() => history.push("/dangers")}>
+        <NavItem eventKey={2} onClick={() => history.push("/map?scenario=dangers")}>
           Dangers
         </NavItem>
 
-        <NavItem eventKey={3} onClick={() => history.push("/anchorages")}>
+        <NavItem eventKey={3} onClick={() => history.push("/map?scenario=anchorages")}>
           Anchorages
         </NavItem>
       </Nav>

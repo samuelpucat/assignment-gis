@@ -1,5 +1,9 @@
 import React from "react";
+import createReactClass from "create-react-class";
+import PropTypes from "prop-types";
+
 import ReactMapboxGl, { GeoJSONLayer } from "react-mapbox-gl";
+import { ZoomControl } from "react-mapbox-gl";
 
 const Mapbox = ReactMapboxGl({
   accessToken:
@@ -7,40 +11,49 @@ const Mapbox = ReactMapboxGl({
 });
 
 const symbolLayout = {
-  'text-field': '{name}',
-  'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-  'text-offset': [0, 0.6],
-  'text-anchor': 'top'
+  "text-field": "{name}",
+  "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+  "text-offset": [0, 0.6],
+  "text-anchor": "top"
 };
 const symbolPaint = {
-  'text-color': 'black'
+  "text-color": "black"
 };
 
-const circleLayout = { visibility: 'visible' };
+const circleLayout = { visibility: "visible" };
 const circlePaint = {
-  //'circle-color': 'white'
+  "circle-color": "#088"
+};
+
+const lineLayout = { visibility: "visible" };
+const linePaint = {
+  "line-color": "#088"
 };
 
 const fillLayout = {
-  "visibility": 'visible'
+  visibility: "visible"
 };
 const fillPaint = {
-  'fill-color': '#088',
-  'fill-opacity': 0.4
+  "fill-color": "#088",
+  "fill-opacity": 0.4
 };
 
 const geojson = {
-  "type": "Feature",
-  "geometry": {
-    "type": "Point",
-    "coordinates": [16, 43]
+  type: "Feature",
+  geometry: {
+    type: "Point",
+    coordinates: [16, 43]
   },
-  "properties": {
-    "name": "Dinagat Islands"
+  properties: {
+    name: "Dinagat Islands"
   }
 };
 
-export class Map extends React.Component {
+export const Map = createReactClass({
+  propTypes: {
+    geoJson: PropTypes.object
+  },
+
   render() {
     console.log("Map", this.props.geoJson);
 
@@ -53,15 +66,18 @@ export class Map extends React.Component {
           height: "100%",
           width: "100%"
         }}
-        onClick={(map, evt)=>{
+        onClick={(map, evt) => {
           console.log(evt);
         }}
-        onMouseMove={(map, evt)=>{
+        onMouseMove={(map, evt) => {
           console.log(evt);
         }}
       >
+        <ZoomControl />
         <GeoJSONLayer
           data={this.props.geoJson}
+          lineLayout={lineLayout}
+          linePaint={linePaint}
           fillLayout={fillLayout}
           fillPaint={fillPaint}
         />
@@ -75,4 +91,4 @@ export class Map extends React.Component {
       </Mapbox>
     );
   }
-}
+});

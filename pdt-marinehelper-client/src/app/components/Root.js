@@ -1,9 +1,6 @@
 import React from "react";
 import { Header } from "./Header";
-import { Map } from "./Map";
-import { Harbours } from "./Harbours";
-import { Anchorages } from "./Anchorages";
-import { Dangers } from "./Dangers";
+import {Scenario} from "./Scenario";
 import { About } from "./About";
 import { Switch, Route } from "react-router";
 
@@ -14,11 +11,8 @@ export class Root extends React.Component {
         <Header />
         <main style={{height: "-webkit-fill-available"}}>
           <Switch>
-            <Route exact path="/" component={Map} />
-            <Route path="/map" component={Map} />
-            <Route path="/harbours" component={Harbours} />
-            <Route path="/anchorages" component={Anchorages} />
-            <Route path="/dangers" component={Dangers} />
+            <Route exact path="/" component={Scenario} />
+            <Route path="/map" component={Scenario} />
             <Route path="/about" component={About} />
           </Switch>
         </main>
