@@ -16,8 +16,8 @@ export const Header = props => {
           Dangers
         </NavItem>
 
-        <NavItem eventKey={3} onClick={() => history.push("/map?scenario=anchorages")}>
-          Anchorages
+        <NavItem eventKey={3} onClick={() => history.push("/map?scenario=coves")}>
+          Coves
         </NavItem>
       </Nav>
 
