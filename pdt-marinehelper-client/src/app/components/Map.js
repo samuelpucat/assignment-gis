@@ -42,6 +42,8 @@ const fillPaint = {
 export const Map = createReactClass({
   propTypes: {
     onClick: PropTypes.func,
+    onShipPositionChange: PropTypes.func,
+    shipPosition: PropTypes.array,
 
     harbours: PropTypes.array,
     onHarbourClick: PropTypes.func,
@@ -53,15 +55,14 @@ export const Map = createReactClass({
 
     anchorages: PropTypes.array,
     moorings: PropTypes.array,
-    underWaterPipesAndCables: PropTypes.array,
+    underwaterCablesAndPipes: PropTypes.array,
     restrictedAreas: PropTypes.array
   },
 
   getInitialState() {
     return {
       zoom: [8],
-      center: [16, 43],
-      myPosition: [16, 43]
+      center: [16, 43]
     };
   },
 
@@ -163,7 +164,21 @@ export const Map = createReactClass({
     }
   },
 
-  _showUnderwaterPipesAndCables() {},
+  _showUnderwaterPipesAndCables() {
+    const pipesAndCables = this.props.underwaterCablesAndPipes;
+    if (pipesAndCables) {
+      return pipesAndCables.map((pac, i) => {
+        return (
+          <GeoJSONLayer
+            key={i}
+            data={pac.geometry}
+            lineLayout={lineLayout}
+            linePaint={{"line-color": "red"}}
+          />
+        );
+      });
+    }
+  },
 
   _showRestrictedAreas() {},
 
@@ -205,15 +220,15 @@ export const Map = createReactClass({
 
         <Layer
           type="symbol"
-          id="myPosition"
+          id="shipPosition"
           layout={{ "icon-image": "ship", "icon-allow-overlap": true }}
           images={images}
         >
           <Feature
-            coordinates={this.state.myPosition}
+            coordinates={this.props.shipPosition}
             draggable
             onDragEnd={evt => {
-              this.setState({ myPosition: [evt.lngLat.lng, evt.lngLat.lat] });
+              this.props.onShipPositionChange([evt.lngLat.lng, evt.lngLat.lat]);
             }}
           />
         </Layer>

@@ -17,7 +17,8 @@ export const Scenario = createReactClass({
       open: false,
       activated: null,
       startPosition: {},
-      endPosition: {}
+      endPosition: {},
+      myPosition: [16, 43]
     };
   },
 
@@ -51,6 +52,12 @@ export const Scenario = createReactClass({
     return parsedUrl.searchParams.get("scenario");
   },
 
+  _myPositionChange(pos) {
+    this.setState({
+      myPosition: pos
+    });
+  },
+
   _getHarbours() {
     axios
       .get("http://localhost:3001/harbours/getAllHarbours")
@@ -78,47 +85,45 @@ export const Scenario = createReactClass({
       });
   },
 
-  _getDangers() {
-
-  },
+  _getDangers() {},
 
   _getAnchorages() {
     axios
-    .get("http://localhost:3001/coves/getAllAnchorages")
-    .then(res => {
-      this.setState({
-        anchorages: res.data.result
+      .get("http://localhost:3001/coves/getAllAnchorages")
+      .then(res => {
+        this.setState({
+          anchorages: res.data.result
+        });
+      })
+      .catch(err => {
+        console.log(err);
       });
-    })
-    .catch(err => {
-      console.log(err);
-    });
   },
 
   _getMoorings() {
     axios
-    .get("http://localhost:3001/coves/getAllMoorings")
-    .then(res => {
-      this.setState({
-        moorings: res.data.result
+      .get("http://localhost:3001/coves/getAllMoorings")
+      .then(res => {
+        this.setState({
+          moorings: res.data.result
+        });
+      })
+      .catch(err => {
+        console.log(err);
       });
-    })
-    .catch(err => {
-      console.log(err);
-    });
   },
 
   _getUnderwaterCablesAndPipes() {
     axios
-    .get("http://localhost:3001/coves/getAllUnderwaterCablesAndPipes")
-    .then(res => {
-      this.setState({
-        underwaterCablesAndPipes: res.data.result
+      .get("http://localhost:3001/coves/getAllUnderwaterCablesAndPipes")
+      .then(res => {
+        this.setState({
+          underwaterCablesAndPipes: res.data.result
+        });
+      })
+      .catch(err => {
+        console.log(err);
       });
-    })
-    .catch(err => {
-      console.log(err);
-    });
   },
 
   _handleMapClick(evt) {
@@ -183,7 +188,7 @@ export const Scenario = createReactClass({
                       <FormControl
                         type="text"
                         placeholder="lat"
-                        value={this.state.startPosition.lat}
+                        value={this.state.startPosition.lat || ""}
                         onChange={e => {
                           let startPosition = {
                             ...this.state.startPosition,
@@ -198,7 +203,7 @@ export const Scenario = createReactClass({
                       <FormControl
                         type="text"
                         placeholder="lng"
-                        value={this.state.startPosition.lng}
+                        value={this.state.startPosition.lng|| ""}
                         onChange={e => {
                           let startPosition = {
                             ...this.state.startPosition,
@@ -224,7 +229,7 @@ export const Scenario = createReactClass({
                       <FormControl
                         type="text"
                         placeholder="lat"
-                        value={this.state.endPosition.lat}
+                        value={this.state.endPosition.lat|| ""}
                         onChange={e => {
                           let endPosition = {
                             ...this.state.endPosition,
@@ -237,9 +242,10 @@ export const Scenario = createReactClass({
                       />
                       <InputGroup.Button style={{ width: "0" }} />
                       <FormControl
+                        ref={elng => (this.elng = elng)}
                         type="text"
                         placeholder="lng"
-                        value={this.state.endPosition.lng}
+                        value={this.state.endPosition.lng|| ""}
                         onChange={e => {
                           let endPosition = {
                             ...this.state.endPosition,
@@ -308,6 +314,8 @@ export const Scenario = createReactClass({
 
         <Map
           onClick={this._handleMapClick}
+          shipPosition={this.state.myPosition}
+          onShipPositionChange={this._myPositionChange}
           harbours={
             this.state.scenario === "harbours" ? this.state.harbours : null
           }
@@ -315,9 +323,17 @@ export const Scenario = createReactClass({
           harbour={
             this.state.scenario === "harbours" ? this.state.harbour : null
           }
-          anchorages={this.state.scenario === "coves" ? this.state.anchorages : null}
-          moorings={this.state.scenario === "coves" ? this.state.moorings : null}
-          underwaterCablesAndPipes={this.state.scenario === "coves" ? this.state.underwaterCablesAndPipes : null}
+          anchorages={
+            this.state.scenario === "coves" ? this.state.anchorages : null
+          }
+          moorings={
+            this.state.scenario === "coves" ? this.state.moorings : null
+          }
+          underwaterCablesAndPipes={
+            this.state.scenario === "coves"
+              ? this.state.underwaterCablesAndPipes
+              : null
+          }
         />
       </div>
     );
