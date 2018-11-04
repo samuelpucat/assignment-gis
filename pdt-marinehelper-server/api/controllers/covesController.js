@@ -2,7 +2,7 @@ const db = require("../../db");
 
 exports.getAllAnchorages = (req, res, next) => {
   const SELECT_ANCHORAGES_QUERY =
-    'SELECT osm_id, "seamark:type", "seamark:name", "seamark:anchorage:category", ST_AsGeoJSON(ST_Transform(way, 4326)) AS geojson ' +
+    'SELECT osm_id, "seamark:type", "seamark:name", "seamark:anchorage:category", ST_AsGeoJSON(ST_Transform(way, 4326)) AS center ' +
     "FROM planet_osm_point " +
     "WHERE \"seamark:type\" = 'anchorage'";
 
@@ -12,8 +12,8 @@ exports.getAllAnchorages = (req, res, next) => {
     }
 
     const result = res1.rows.map(row => {
-      const geojson = JSON.parse(row.geojson);
-      return { ...row, geojson };
+      const center = JSON.parse(row.center);
+      return { ...row, center };
     });
 
     res.status(200).json({
@@ -26,7 +26,7 @@ exports.getAllAnchorages = (req, res, next) => {
 
 exports.getAllMoorings = (req, res, next) => {
   const SELECT_MOORINGS_QUERY =
-    'SELECT osm_id, "seamark:type", "seamark:name", ST_AsGeoJSON(ST_Transform(way, 4326)) as geojson ' +
+    'SELECT osm_id, "seamark:type", "seamark:name", ST_AsGeoJSON(ST_Transform(way, 4326)) as center ' +
     "FROM planet_osm_point " +
     "WHERE \"seamark:type\" = 'mooring'";
 
@@ -36,8 +36,8 @@ exports.getAllMoorings = (req, res, next) => {
     }
 
     const result = res1.rows.map(row => {
-      const geojson = JSON.parse(row.geojson);
-      return { ...row, geojson };
+      const center = JSON.parse(row.center);
+      return { ...row, center };
     });
 
     res.status(200).json({
@@ -71,7 +71,7 @@ exports.getAllRestrictedAreas = (req, res, next) => {
 
 exports.getAllUnderwaterCablesAndPipes = (req, res, next) => {
   const SELECT_UNDERWATER_CABLES_AND_PIPES_QUERY =
-    'SELECT osm_id, "seamark:type", "seamark:name", ST_AsGeoJSON(ST_Transform(way, 4326)) as geojson ' +
+    'SELECT osm_id, "seamark:type", "seamark:name", ST_AsGeoJSON(ST_Transform(way, 4326)) as geometry ' +
     "FROM planet_osm_line " +
     "WHERE \"seamark:type\" = 'pipeline_submarine' OR \"seamark:type\" = 'cable_submarine'";
 
@@ -81,8 +81,8 @@ exports.getAllUnderwaterCablesAndPipes = (req, res, next) => {
     }
 
     const result = res1.rows.map(row => {
-      const geojson = JSON.parse(row.geojson);
-      return { ...row, geojson };
+      const geometry = JSON.parse(row.geometry);
+      return { ...row, geometry };
     });
 
     res.status(200).json({

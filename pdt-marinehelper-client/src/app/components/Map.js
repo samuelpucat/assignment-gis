@@ -3,7 +3,8 @@ import createReactClass from "create-react-class";
 import PropTypes from "prop-types";
 
 import ReactMapboxGl, { GeoJSONLayer } from "react-mapbox-gl";
-import { ZoomControl, Marker, Popup } from "react-mapbox-gl";
+import { ZoomControl, Marker, Popup, Layer, Feature } from "react-mapbox-gl";
+import ship_icon from "../../assets/sailing.png";
 
 const Mapbox = ReactMapboxGl({
   accessToken:
@@ -21,7 +22,6 @@ const symbolPaint = {
 };
 
 const circleLayout = { visibility: "visible" };
-const invisibleLayout = { visibility: "invisible" };
 const circlePaint = {
   "circle-color": "#088"
 };
@@ -39,36 +39,29 @@ const fillPaint = {
   "fill-opacity": 0.4
 };
 
-const geojson = {
-  type: "Feature",
-  geometry: {
-    type: "Point",
-    coordinates: [16, 43]
-  },
-  properties: {
-    name: "Dinagat Islands"
-  }
-};
-
 export const Map = createReactClass({
   propTypes: {
     onClick: PropTypes.func,
-    onHarbourClick: PropTypes.func,
 
-    geoJson: PropTypes.object,
     harbours: PropTypes.array,
+    onHarbourClick: PropTypes.func,
     harbour: PropTypes.object,
-    harbourFacilities: PropTypes.object,
-    dangers: PropTypes.object,
-    coves: PropTypes.object,
-    underWaterPipesAndCables: PropTypes.object,
-    restrictedAreas: PropTypes.object
+    harbourFacilities: PropTypes.array,
+
+    waypoints: PropTypes.array,
+    dangers: PropTypes.array,
+
+    anchorages: PropTypes.array,
+    moorings: PropTypes.array,
+    underWaterPipesAndCables: PropTypes.array,
+    restrictedAreas: PropTypes.array
   },
 
   getInitialState() {
     return {
       zoom: [8],
-      center: [16, 43]
+      center: [16, 43],
+      myPosition: [16, 43]
     };
   },
 
@@ -88,7 +81,10 @@ export const Map = createReactClass({
               this.props.onHarbourClick(har.osm_id);
             }}
           >
-            <img src={"http://maps.google.com/mapfiles/ms/icons/sailing.png"} />
+            <img
+              src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
+              alt="harbour"
+            />
           </Marker>
         );
       });
@@ -125,17 +121,42 @@ export const Map = createReactClass({
 
   _showDangers() {},
 
-  _showCoves() {
-    const coves = this.props.coves;
-    if (coves) {
-      return coves.map((cove, i) => {
+  _showAnchorages() {
+    const anchorages = this.props.anchorages;
+    if (anchorages) {
+      return anchorages.map((anchorage, i) => {
         return (
           <Marker
             key={i}
-            coordinates={cove.geojson.coordinates}
+            coordinates={anchorage.center.coordinates}
             anchor="bottom"
           >
-            <img src={"http://maps.google.com/mapfiles/ms/icons/sailing.png"} />
+            <img
+              src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
+              alt="anchorage"
+            />
+            {"anchorage"}
+          </Marker>
+        );
+      });
+    }
+  },
+
+  _showMoorings() {
+    const moorings = this.props.moorings;
+    if (moorings) {
+      return moorings.map((mooring, i) => {
+        return (
+          <Marker
+            key={i}
+            coordinates={mooring.center.coordinates}
+            anchor="bottom"
+          >
+            <img
+              src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
+              alt="mooring"
+            />
+            {"mooring"}
           </Marker>
         );
       });
@@ -147,10 +168,14 @@ export const Map = createReactClass({
   _showRestrictedAreas() {},
 
   render() {
+    const ship = new Image();
+    ship.src = ship_icon;
+    const images = ["ship", ship];
+
     return (
       <Mapbox
         onStyleLoad={el => (this.map = el)}
-        style="mapbox://styles/zulbaijin/cjngbh3k2242n2snt2lk1345f"
+        style={"mapbox://styles/zulbaijin/cjngbh3k2242n2snt2lk1345f"}
         center={this.state.center}
         zoom={this.state.zoom}
         containerStyle={{
@@ -177,32 +202,31 @@ export const Map = createReactClass({
         }}
       >
         <ZoomControl />
-        <Marker coordinates={[16, 43]} anchor="bottom">
-          <div>asdf</div>
-        </Marker>
-        <GeoJSONLayer
-          data={this.props.geoJson}
-          lineLayout={lineLayout}
-          linePaint={linePaint}
-          fillLayout={fillLayout}
-          fillPaint={fillPaint}
-        />
-        <GeoJSONLayer
-          data={geojson}
-          symbolLayout={symbolLayout}
-          symbolPaint={symbolPaint}
-          circleLayout={circleLayout}
-          circlePaint={circlePaint}
-        />
+
+        <Layer
+          type="symbol"
+          id="myPosition"
+          layout={{ "icon-image": "ship", "icon-allow-overlap": true }}
+          images={images}
+        >
+          <Feature
+            coordinates={this.state.myPosition}
+            draggable
+            onDragEnd={evt => {
+              this.setState({ myPosition: [evt.lngLat.lng, evt.lngLat.lat] });
+            }}
+          />
+        </Layer>
+
         {this._showHarbours()}
         {this._showHarbourPopup()}
         {this._showHarbourGeometry()}
-
         {this._showHarbourFacilities()}
 
         {this._showDangers()}
 
-        {this._showCoves()}
+        {this._showAnchorages()}
+        {this._showMoorings()}
         {this._showUnderwaterPipesAndCables()}
         {this._showRestrictedAreas()}
       </Mapbox>

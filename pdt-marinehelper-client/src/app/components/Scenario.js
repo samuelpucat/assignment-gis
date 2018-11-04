@@ -33,8 +33,12 @@ export const Scenario = createReactClass({
           this._getHarbours();
           break;
         case "dangers":
+          this._getDangers();
           break;
         case "coves":
+          this._getAnchorages();
+          this._getMoorings();
+          this._getUnderwaterCablesAndPipes();
           break;
         default:
           break;
@@ -72,6 +76,49 @@ export const Scenario = createReactClass({
       .catch(err => {
         console.log(err);
       });
+  },
+
+  _getDangers() {
+
+  },
+
+  _getAnchorages() {
+    axios
+    .get("http://localhost:3001/coves/getAllAnchorages")
+    .then(res => {
+      this.setState({
+        anchorages: res.data.result
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  },
+
+  _getMoorings() {
+    axios
+    .get("http://localhost:3001/coves/getAllMoorings")
+    .then(res => {
+      this.setState({
+        moorings: res.data.result
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  },
+
+  _getUnderwaterCablesAndPipes() {
+    axios
+    .get("http://localhost:3001/coves/getAllUnderwaterCablesAndPipes")
+    .then(res => {
+      this.setState({
+        underwaterCablesAndPipes: res.data.result
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
   },
 
   _handleMapClick(evt) {
@@ -261,7 +308,6 @@ export const Scenario = createReactClass({
 
         <Map
           onClick={this._handleMapClick}
-          geoJson={this.state.geoJson}
           harbours={
             this.state.scenario === "harbours" ? this.state.harbours : null
           }
@@ -269,6 +315,9 @@ export const Scenario = createReactClass({
           harbour={
             this.state.scenario === "harbours" ? this.state.harbour : null
           }
+          anchorages={this.state.scenario === "coves" ? this.state.anchorages : null}
+          moorings={this.state.scenario === "coves" ? this.state.moorings : null}
+          underwaterCablesAndPipes={this.state.scenario === "coves" ? this.state.underwaterCablesAndPipes : null}
         />
       </div>
     );
