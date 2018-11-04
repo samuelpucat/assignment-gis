@@ -7,14 +7,7 @@ import "./Scenario.css";
 import { Map } from "./Map";
 import { Grid, Col, Row } from "react-bootstrap";
 import { PageHeader, Checkbox } from "react-bootstrap";
-import {
-  Form,
-  FormGroup,
-  ControlLabel,
-  FormControl,
-  Button,
-  InputGroup
-} from "react-bootstrap";
+import { Form, FormControl, Button, InputGroup } from "react-bootstrap";
 
 export const Scenario = createReactClass({
   getInitialState() {
@@ -28,32 +21,57 @@ export const Scenario = createReactClass({
     };
   },
 
-  componentDidMount() {
-    axios
-      .get("http://localhost:3001/harbours/getHarbour?id=244608718")
-      .then(res => {
-        this.setState({
-          geoJson: res.data.result[0].way
-        });
-        console.log(res.data.result[0]);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  },
-
   componentDidUpdate() {
     let scenario = this._getScenario();
     if (this.state.scenario !== scenario) {
       this.setState({
         scenario
       });
+
+      switch (scenario) {
+        case "harbours":
+          this._getHarbours();
+          break;
+        case "dangers":
+          break;
+        case "coves":
+          break;
+        default:
+          break;
+      }
     }
   },
 
   _getScenario() {
     let parsedUrl = new URL(window.location.href);
     return parsedUrl.searchParams.get("scenario");
+  },
+
+  _getHarbours() {
+    axios
+      .get("http://localhost:3001/harbours/getAllHarbours")
+      .then(res => {
+        this.setState({
+          harbours: res.data.result
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  },
+
+  _getHarbour(id) {
+    axios
+      .get(`http://localhost:3001/harbours/getHarbour?id=${id}`)
+      .then(res => {
+        this.setState({
+          harbour: res.data.result[0]
+        });
+        console.log(res.data.result[0]);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   },
 
   _handleMapClick(evt) {
@@ -74,7 +92,6 @@ export const Scenario = createReactClass({
   },
 
   render() {
-    console.log(this.state.startPosition, this.state.endPosition);
     let controls = null;
     const scenario = this.state.scenario;
     switch (scenario) {
@@ -116,9 +133,35 @@ export const Scenario = createReactClass({
                   <Form horizontal>
                     <InputGroup>
                       <InputGroup.Addon>1</InputGroup.Addon>
-                      <FormControl type="text" />
+                      <FormControl
+                        type="text"
+                        placeholder="lat"
+                        value={this.state.startPosition.lat}
+                        onChange={e => {
+                          let startPosition = {
+                            ...this.state.startPosition,
+                            lat: e.target.value
+                          };
+                          this.setState({
+                            startPosition
+                          });
+                        }}
+                      />
                       <InputGroup.Button style={{ width: "0" }} />
-                      <FormControl type="text" />
+                      <FormControl
+                        type="text"
+                        placeholder="lng"
+                        value={this.state.startPosition.lng}
+                        onChange={e => {
+                          let startPosition = {
+                            ...this.state.startPosition,
+                            lng: e.target.value
+                          };
+                          this.setState({
+                            startPosition
+                          });
+                        }}
+                      />
                       <InputGroup.Button>
                         <Button
                           onClick={() => {
@@ -131,9 +174,35 @@ export const Scenario = createReactClass({
                     </InputGroup>
                     <InputGroup>
                       <InputGroup.Addon>2</InputGroup.Addon>
-                      <FormControl type="text" />
+                      <FormControl
+                        type="text"
+                        placeholder="lat"
+                        value={this.state.endPosition.lat}
+                        onChange={e => {
+                          let endPosition = {
+                            ...this.state.endPosition,
+                            lat: e.target.value
+                          };
+                          this.setState({
+                            endPosition
+                          });
+                        }}
+                      />
                       <InputGroup.Button style={{ width: "0" }} />
-                      <FormControl type="text" />
+                      <FormControl
+                        type="text"
+                        placeholder="lng"
+                        value={this.state.endPosition.lng}
+                        onChange={e => {
+                          let endPosition = {
+                            ...this.state.endPosition,
+                            lng: e.target.value
+                          };
+                          this.setState({
+                            endPosition
+                          });
+                        }}
+                      />
                       <InputGroup.Button>
                         <Button
                           onClick={() => {
@@ -185,11 +254,22 @@ export const Scenario = createReactClass({
       default:
         controls = null;
     }
+
     return (
       <div className="scenario">
         {controls}
 
-        <Map geoJson={this.state.geoJson} onClick={this._handleMapClick} />
+        <Map
+          onClick={this._handleMapClick}
+          geoJson={this.state.geoJson}
+          harbours={
+            this.state.scenario === "harbours" ? this.state.harbours : null
+          }
+          onHarbourClick={this._getHarbour}
+          harbour={
+            this.state.scenario === "harbours" ? this.state.harbour : null
+          }
+        />
       </div>
     );
   }
