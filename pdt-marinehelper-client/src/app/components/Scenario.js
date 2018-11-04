@@ -5,16 +5,26 @@ import axios from "axios";
 import "./Scenario.css";
 
 import { Map } from "./Map";
-import { Grid, Col, Row} from "react-bootstrap";
+import { Grid, Col, Row } from "react-bootstrap";
 import { PageHeader, Checkbox } from "react-bootstrap";
-import { Form, FormGroup, ControlLabel, FormControl, Button, InputGroup } from "react-bootstrap";
+import {
+  Form,
+  FormGroup,
+  ControlLabel,
+  FormControl,
+  Button,
+  InputGroup
+} from "react-bootstrap";
 
 export const Scenario = createReactClass({
   getInitialState() {
     let scenario = this._getScenario();
     return {
       scenario,
-      open: false
+      open: false,
+      activated: null,
+      startPosition: {},
+      endPosition: {}
     };
   },
 
@@ -46,7 +56,25 @@ export const Scenario = createReactClass({
     return parsedUrl.searchParams.get("scenario");
   },
 
+  _handleMapClick(evt) {
+    if (this.state.activated !== null) {
+      if (this.state.activated === 1) {
+        this.setState({
+          startPosition: evt.lngLat,
+          activated: null
+        });
+      }
+      if (this.state.activated === 2) {
+        this.setState({
+          endPosition: evt.lngLat,
+          activated: null
+        });
+      }
+    }
+  },
+
   render() {
+    console.log(this.state.startPosition, this.state.endPosition);
     let controls = null;
     const scenario = this.state.scenario;
     switch (scenario) {
@@ -59,109 +87,83 @@ export const Scenario = createReactClass({
                   <PageHeader>{"Harbours"}</PageHeader>
                 </Row>
                 <Row>
-                  <Checkbox>
-                    {"Toilets"}
-                  </Checkbox>
-                  <Checkbox>
-                    {"Showers"}
-                  </Checkbox>
-                  <Checkbox>
-                    {"Electricity"}
-                  </Checkbox>
-                  <Checkbox>
-                    {"Fuel station"}
-                  </Checkbox>
-                  <Checkbox>
-                    {"Chandler"}
-                  </Checkbox>
-                  <Checkbox>
-                    {"Laundrette"}
-                  </Checkbox>
-                  <Checkbox>
-                    {"Boatyard"}
-                  </Checkbox>
-                  <Checkbox>
-                    {"Slipway"}
-                  </Checkbox>
-                  <Checkbox>
-                    {"Boat hoist"}
-                  </Checkbox>
-                  <Checkbox>
-                    {"Visitor berth"}
-                  </Checkbox>
+                  <Checkbox>{"Toilets"}</Checkbox>
+                  <Checkbox>{"Showers"}</Checkbox>
+                  <Checkbox>{"Electricity"}</Checkbox>
+                  <Checkbox>{"Fuel station"}</Checkbox>
+                  <Checkbox>{"Chandler"}</Checkbox>
+                  <Checkbox>{"Laundrette"}</Checkbox>
+                  <Checkbox>{"Boatyard"}</Checkbox>
+                  <Checkbox>{"Slipway"}</Checkbox>
+                  <Checkbox>{"Boat hoist"}</Checkbox>
+                  <Checkbox>{"Visitor berth"}</Checkbox>
                 </Row>
               </Col>
             </Grid>
           </div>
         );
         break;
-        case "dangers":
+      case "dangers":
         controls = (
           <div className="scenario-controls">
-          <Grid fluid={true}>
-            <Col xs={12}>
-              <Row>
-                <PageHeader>{"Dangers"}</PageHeader>
-              </Row>
-              <Row>
-                <h2>{"Select line of your cruise"}</h2>
-                <Form horizontal>
-                  <InputGroup>
-                    <InputGroup.Addon>1</InputGroup.Addon>
-                    <FormControl type="text" />
-                    <InputGroup.Button style={{width: "0"}} />
-                    <FormControl type="text" />
-                    <InputGroup.Button>
-                      <Button>select</Button>
-                    </InputGroup.Button>
-                  </InputGroup>
-                  <InputGroup>
-                  <InputGroup.Addon>2</InputGroup.Addon>
-                    <FormControl type="text" />
-                    <InputGroup.Button style={{width: "0"}} />
-                    <FormControl type="text" />
-                    <InputGroup.Button>
-                      <Button>select</Button>
-                    </InputGroup.Button>
-                  </InputGroup>
-                </Form>
-              </Row>
-              <Row>
-                <h2>{"Choose dangers to show"}</h2>
-                <Checkbox>
-                  {"Isolated dangers"}
-                </Checkbox>
-                <Checkbox>
-                  {"Beacons"}
-                </Checkbox>
-                <Checkbox>
-                  {"Rocks"}
-                </Checkbox>
-                <Checkbox>
-                  {"Buoys"}
-                </Checkbox>
-                <Checkbox>
-                  {"Wrecks"}
-                </Checkbox>
-                <Checkbox>
-                  {"Cardinal signs"}
-                </Checkbox>
-                <Checkbox>
-                  {"Special purpose signs"}
-                </Checkbox>
-                <Checkbox>
-                  {"Lights"}
-                </Checkbox>
-                <Checkbox>
-                  {"Coast lines"}
-                </Checkbox>
-              </Row>
-            </Col>
-          </Grid>
-        </div>
+            <Grid fluid={true}>
+              <Col xs={12}>
+                <Row>
+                  <PageHeader>{"Dangers"}</PageHeader>
+                </Row>
+                <Row>
+                  <h2>{"Select line of your cruise"}</h2>
+                  <Form horizontal>
+                    <InputGroup>
+                      <InputGroup.Addon>1</InputGroup.Addon>
+                      <FormControl type="text" />
+                      <InputGroup.Button style={{ width: "0" }} />
+                      <FormControl type="text" />
+                      <InputGroup.Button>
+                        <Button
+                          onClick={() => {
+                            this.setState({ activated: 1 });
+                          }}
+                        >
+                          select
+                        </Button>
+                      </InputGroup.Button>
+                    </InputGroup>
+                    <InputGroup>
+                      <InputGroup.Addon>2</InputGroup.Addon>
+                      <FormControl type="text" />
+                      <InputGroup.Button style={{ width: "0" }} />
+                      <FormControl type="text" />
+                      <InputGroup.Button>
+                        <Button
+                          onClick={() => {
+                            this.setState({ activated: 2 });
+                          }}
+                        >
+                          select
+                        </Button>
+                      </InputGroup.Button>
+                    </InputGroup>
+                  </Form>
+                </Row>
+                <Row>
+                  <h2>{"Choose dangers to show"}</h2>
+                  <Checkbox>{"Isolated dangers"}</Checkbox>
+                  <Checkbox>{"Beacons"}</Checkbox>
+                  <Checkbox>{"Rocks"}</Checkbox>
+                  <Checkbox>{"Buoys"}</Checkbox>
+                  <Checkbox>{"Wrecks"}</Checkbox>
+                  <Checkbox>{"Cardinal signs"}</Checkbox>
+                  <Checkbox>{"Special purpose signs"}</Checkbox>
+                  <Checkbox>{"Lights"}</Checkbox>
+                  <Checkbox>{"Coast lines"}</Checkbox>
+                </Row>
+              </Col>
+            </Grid>
+          </div>
         );
         break;
-        case "coves":
+      case "coves":
         controls = (
           <div className="scenario-controls">
             <Grid fluid={true}>
@@ -170,18 +172,10 @@ export const Scenario = createReactClass({
                   <PageHeader>{"Coves"}</PageHeader>
                 </Row>
                 <Row>
-                  <Checkbox>
-                    {"Anchorages"}
-                  </Checkbox>
-                  <Checkbox>
-                    {"Moorings"}
-                  </Checkbox>
-                  <Checkbox>
-                    {"Show underwater cables/pipes"}
-                  </Checkbox>
-                  <Checkbox>
-                    {"Show restricted areas"}
-                  </Checkbox>
+                  <Checkbox>{"Anchorages"}</Checkbox>
+                  <Checkbox>{"Moorings"}</Checkbox>
+                  <Checkbox>{"Show underwater cables/pipes"}</Checkbox>
+                  <Checkbox>{"Show restricted areas"}</Checkbox>
                 </Row>
               </Col>
             </Grid>
@@ -195,7 +189,7 @@ export const Scenario = createReactClass({
       <div className="scenario">
         {controls}
 
-        <Map geoJson={this.state.geoJson} />
+        <Map geoJson={this.state.geoJson} onClick={this._handleMapClick} />
       </div>
     );
   }

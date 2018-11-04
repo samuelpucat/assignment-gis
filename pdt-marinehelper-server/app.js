@@ -3,9 +3,9 @@ const app = express();
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 
-const productRoutes = require("./api/routes/products");
-const orderRoutes = require("./api/routes/orders");
 const harbourRoutes = require("./api/routes/harbours");
+const coveRoutes = require("./api/routes/coves");
+const dangerRoutes = require("./api/routes/dangers");
 
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -24,9 +24,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/products", productRoutes);
-app.use("/orders", orderRoutes);
 app.use("/harbours", harbourRoutes);
+app.use("/coves", coveRoutes);
+app.use("/dangers", dangerRoutes);
 
 app.use((req, res, next) => {
   const error = new Error("not found");

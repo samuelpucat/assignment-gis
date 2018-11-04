@@ -51,7 +51,8 @@ const geojson = {
 
 export const Map = createReactClass({
   propTypes: {
-    geoJson: PropTypes.object
+    geoJson: PropTypes.object,
+    onClick: PropTypes.func
   },
 
   render() {
@@ -68,9 +69,10 @@ export const Map = createReactClass({
         }}
         onClick={(map, evt) => {
           console.log(evt);
+          this.props.onClick(evt);
         }}
         onMouseMove={(map, evt) => {
-          console.log(evt);
+          //console.log(evt);
         }}
       >
         <ZoomControl />
