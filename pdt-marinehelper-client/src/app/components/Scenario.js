@@ -22,7 +22,29 @@ export const Scenario = createReactClass({
     };
   },
 
-  componentDidUpdate() {
+  componentDidMount() {
+    let scenario = this._getScenario();
+
+    switch (scenario) {
+      case "harbours":
+        this._getHarbours();
+        break;
+      case "dangers":
+        this._getDangers();
+        break;
+      case "coves":
+        if (this.state.myPosition) {
+          this._getAnchorages();
+          this._getMoorings();
+          this._getUnderwaterCablesAndPipes();
+        }
+        break;
+      default:
+        break;
+    }
+  },
+
+  componentDidUpdate(prevProps, prevState) {
     let scenario = this._getScenario();
     if (this.state.scenario !== scenario) {
       this.setState({
@@ -44,6 +66,12 @@ export const Scenario = createReactClass({
         default:
           break;
       }
+    }
+
+    if (this.state.myPosition !== prevState.myPosition) {
+      this._getAnchorages();
+      this._getMoorings();
+      this._getUnderwaterCablesAndPipes();
     }
   },
 
@@ -89,7 +117,13 @@ export const Scenario = createReactClass({
 
   _getAnchorages() {
     axios
-      .get("http://localhost:3001/coves/getAllAnchorages")
+      .get("http://localhost:3001/coves/getNearbyAnchorages", {
+        params: {
+          lat: this.state.myPosition[1],
+          lng: this.state.myPosition[0],
+          maxDistance: 30000
+        }
+      })
       .then(res => {
         this.setState({
           anchorages: res.data.result
@@ -102,7 +136,13 @@ export const Scenario = createReactClass({
 
   _getMoorings() {
     axios
-      .get("http://localhost:3001/coves/getAllMoorings")
+      .get("http://localhost:3001/coves/getNearbyMoorings", {
+        params: {
+          lat: this.state.myPosition[1],
+          lng: this.state.myPosition[0],
+          maxDistance: 30000
+        }
+      })
       .then(res => {
         this.setState({
           moorings: res.data.result
@@ -115,7 +155,13 @@ export const Scenario = createReactClass({
 
   _getUnderwaterCablesAndPipes() {
     axios
-      .get("http://localhost:3001/coves/getAllUnderwaterCablesAndPipes")
+      .get("http://localhost:3001/coves/getNearbyUnderwaterCablesAndPipes", {
+        params: {
+          lat: this.state.myPosition[1],
+          lng: this.state.myPosition[0],
+          maxDistance: 30000
+        }
+      })
       .then(res => {
         this.setState({
           underwaterCablesAndPipes: res.data.result
@@ -203,7 +249,7 @@ export const Scenario = createReactClass({
                       <FormControl
                         type="text"
                         placeholder="lng"
-                        value={this.state.startPosition.lng|| ""}
+                        value={this.state.startPosition.lng || ""}
                         onChange={e => {
                           let startPosition = {
                             ...this.state.startPosition,
@@ -229,7 +275,7 @@ export const Scenario = createReactClass({
                       <FormControl
                         type="text"
                         placeholder="lat"
-                        value={this.state.endPosition.lat|| ""}
+                        value={this.state.endPosition.lat || ""}
                         onChange={e => {
                           let endPosition = {
                             ...this.state.endPosition,
@@ -245,7 +291,7 @@ export const Scenario = createReactClass({
                         ref={elng => (this.elng = elng)}
                         type="text"
                         placeholder="lng"
-                        value={this.state.endPosition.lng|| ""}
+                        value={this.state.endPosition.lng || ""}
                         onChange={e => {
                           let endPosition = {
                             ...this.state.endPosition,

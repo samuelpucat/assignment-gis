@@ -132,11 +132,12 @@ export const Map = createReactClass({
             coordinates={anchorage.center.coordinates}
             anchor="bottom"
           >
+            {"anchorage"}
+            <br />
             <img
               src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
               alt="anchorage"
             />
-            {"anchorage"}
           </Marker>
         );
       });
@@ -153,11 +154,12 @@ export const Map = createReactClass({
             coordinates={mooring.center.coordinates}
             anchor="bottom"
           >
+            {"mooring"}
+            <br />
             <img
               src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
               alt="mooring"
             />
-            {"mooring"}
           </Marker>
         );
       });
@@ -173,7 +175,7 @@ export const Map = createReactClass({
             key={i}
             data={pac.geometry}
             lineLayout={lineLayout}
-            linePaint={{"line-color": "red"}}
+            linePaint={{ "line-color": "red" }}
           />
         );
       });
