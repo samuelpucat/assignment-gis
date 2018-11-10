@@ -30,7 +30,7 @@ export const Scenario = createReactClass({
         this._getHarbours();
         break;
       case "dangers":
-        this._getDangers();
+        this._getIsolatedDangers();
         break;
       case "coves":
         if (this.state.myPosition) {
@@ -56,7 +56,7 @@ export const Scenario = createReactClass({
           this._getHarbours();
           break;
         case "dangers":
-          this._getDangers();
+          this._getIsolatedDangers();
           break;
         case "coves":
           this._getAnchorages();
@@ -72,6 +72,13 @@ export const Scenario = createReactClass({
       this._getAnchorages();
       this._getMoorings();
       this._getUnderwaterCablesAndPipes();
+    }
+
+    if (
+      this.state.startPosition !== prevState.startPosition ||
+      this.state.endPosition !== prevState.endPosition
+    ) {
+      this._getIsolatedDangers();
     }
   },
 
@@ -113,7 +120,34 @@ export const Scenario = createReactClass({
       });
   },
 
-  _getDangers() {},
+  _getIsolatedDangers() {
+    let startPosition = this.state.startPosition;
+    let endPosition = this.state.endPosition;
+    if (
+      startPosition.hasOwnProperty("lat") &&
+      startPosition.hasOwnProperty("lng") &&
+      endPosition.hasOwnProperty("lat") &&
+      endPosition.hasOwnProperty("lng")
+    ) {
+      axios
+        .post(`http://localhost:3001/dangers/getIsolatedDangers`, {
+          points: [
+            [startPosition.lng, startPosition.lat],
+            [endPosition.lng, endPosition.lat]
+          ],
+          buffer: 1000
+        })
+        .then(res => {
+          this.setState({
+            isolatedDangers: res.data.result
+          });
+          console.log(res.data.result);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  },
 
   _getAnchorages() {
     axios
@@ -378,6 +412,11 @@ export const Scenario = createReactClass({
           underwaterCablesAndPipes={
             this.state.scenario === "coves"
               ? this.state.underwaterCablesAndPipes
+              : null
+          }
+          isolatedDangers={
+            this.state.scenario === "dangers"
+              ? this.state.isolatedDangers
               : null
           }
         />

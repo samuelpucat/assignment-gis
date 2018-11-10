@@ -51,7 +51,7 @@ export const Map = createReactClass({
     harbourFacilities: PropTypes.array,
 
     waypoints: PropTypes.array,
-    dangers: PropTypes.array,
+    isolatedDangers: PropTypes.array,
 
     anchorages: PropTypes.array,
     moorings: PropTypes.array,
@@ -120,7 +120,29 @@ export const Map = createReactClass({
 
   _showHarbourFacilities() {},
 
-  _showDangers() {},
+  _showIsolatedDangers() {
+    const isolatedDangers = this.props.isolatedDangers;
+    if (isolatedDangers) {
+      return isolatedDangers.map((isolatedDanger, i) => {
+        return (
+          <Marker
+            key={i}
+            coordinates={isolatedDanger.center.coordinates}
+            anchor="bottom"
+          >
+            {"isolated danger"}
+            <br />
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <img
+                src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
+                alt="isolated danger"
+              />
+            </div>
+          </Marker>
+        );
+      });
+    }
+  },
 
   _showAnchorages() {
     const anchorages = this.props.anchorages;
@@ -134,10 +156,12 @@ export const Map = createReactClass({
           >
             {"anchorage"}
             <br />
-            <img
-              src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
-              alt="anchorage"
-            />
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <img
+                src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
+                alt="anchorage"
+              />
+            </div>
           </Marker>
         );
       });
@@ -156,10 +180,12 @@ export const Map = createReactClass({
           >
             {"mooring"}
             <br />
-            <img
-              src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
-              alt="mooring"
-            />
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <img
+                src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
+                alt="mooring"
+              />
+            </div>
           </Marker>
         );
       });
@@ -240,7 +266,7 @@ export const Map = createReactClass({
         {this._showHarbourGeometry()}
         {this._showHarbourFacilities()}
 
-        {this._showDangers()}
+        {this._showIsolatedDangers()}
 
         {this._showAnchorages()}
         {this._showMoorings()}
