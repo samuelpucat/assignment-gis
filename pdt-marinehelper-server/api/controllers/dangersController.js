@@ -16,14 +16,11 @@ exports.getIsolatedDangers = (req, res, next) => {
 
   const SELECT_ISOLATED_DANGERS_QUERY =
     'SELECT osm_id, "seamark:type", "seamark:name", ' +
-    '"seamark:light:height", "seamark:light:colour", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
-    "ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
+    ' "seamark:light:height", "seamark:light:colour", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
+    " ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
     "FROM planet_osm_point " +
     "WHERE \"seamark:type\" like '%_isolated_danger' AND " +
-    "ST_Intersects(" +
-    "ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), " +
-    "ST_Transform(way, 4326)" +
-    ")";
+    "ST_Intersects(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), ST_Transform(way, 4326))";
 
   db.query(
     SELECT_ISOLATED_DANGERS_QUERY,
@@ -54,14 +51,11 @@ exports.getLateralSigns = (req, res, next) => {
   };
   let SELECT_LATERAL_SIGNS_QUERY =
     'SELECT osm_id, "seamark:type", "seamark:name", ' +
-    '"seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
-    "ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
+    ' "seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
+    " ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
     "FROM planet_osm_point " +
     "WHERE \"seamark:type\" like '%_lateral' AND " +
-    "ST_Intersects(" +
-    "ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), " +
-    "ST_Transform(way, 4326)" +
-    ")";
+    "ST_Intersects(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), ST_Transform(way, 4326))";
 
   db.query(
     SELECT_LATERAL_SIGNS_QUERY,
@@ -92,14 +86,11 @@ exports.getCardinalSigns = (req, res, next) => {
   };
   let SELECT_CARDINAL_SIGNS_QUERY =
     'SELECT osm_id, "seamark:type", "seamark:name", "seamark:buoy_cardinal:category", ' +
-    '"seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
-    "ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
+    ' "seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
+    " ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
     "FROM planet_osm_point " +
     "WHERE \"seamark:type\" like '%_cardinal' AND " +
-    "ST_Intersects(" +
-    "ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), " +
-    "ST_Transform(way, 4326)" +
-    ")";
+    "ST_Intersects(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), ST_Transform(way, 4326))";
 
   db.query(
     SELECT_CARDINAL_SIGNS_QUERY,
@@ -130,14 +121,11 @@ exports.getSpecialPurposeSigns = (req, res, next) => {
   };
   let SELECT_SPECIAL_PURPOSE_SIGNS_QUERY =
     'SELECT osm_id, "seamark:type", "seamark:name", "seamark:buoy_cardinal:category", ' +
-    '"seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
-    "ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
+    ' "seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
+    " ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
     "FROM planet_osm_point " +
     "WHERE \"seamark:type\" like '%_special_purpose' AND " +
-    "ST_Intersects(" +
-    "ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), " +
-    "ST_Transform(way, 4326)" +
-    ")";
+    "ST_Intersects(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), ST_Transform(way, 4326))";
 
   db.query(
     SELECT_SPECIAL_PURPOSE_SIGNS_QUERY,
@@ -168,15 +156,12 @@ exports.getLights = (req, res, next) => {
   };
   let SELECT_LIGHTS_QUERY =
     'SELECT osm_id, "seamark:type", "seamark:name", ' +
-    '"seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
-    '"seamark:light:sector_start", "seamark:light:sector_end", "seamark:light:category", "seamark:light:visibility", "seamark:light:exhibition", ' +
-    "ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
+    ' "seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
+    ' "seamark:light:sector_start", "seamark:light:sector_end", "seamark:light:category", "seamark:light:visibility", "seamark:light:exhibition", ' +
+    " ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
     "FROM planet_osm_point " +
     "WHERE \"seamark:type\" like 'light_%' AND " +
-    "ST_Intersects(" +
-    "ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), " +
-    "ST_Transform(way, 4326)" +
-    ")";
+    "ST_Intersects(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), ST_Transform(way, 4326))";
 
   db.query(
     SELECT_LIGHTS_QUERY,
@@ -207,23 +192,19 @@ exports.getRocks = (req, res, next) => {
   };
   let SELECT_LIGHTS_QUERY =
     "WITH rocks AS (" +
-    'SELECT osm_id, "seamark:type", "seamark:name", "seamark:rock:water_level", ' +
-    "ST_AsGeoJSON(ST_Transform(way, 4326)) as center, way " +
-    "FROM planet_osm_point " +
-    "WHERE \"seamark:type\" = 'rock'" +
+    ' SELECT osm_id, "seamark:type", "seamark:name", "seamark:rock:water_level", ' +
+    " ST_AsGeoJSON(ST_Transform(way, 4326)) as center, way " +
+    " FROM planet_osm_point " +
+    " WHERE \"seamark:type\" = 'rock'" +
     "UNION " +
-    'SELECT osm_id, "seamark:type", "seamark:name", "seamark:rock:water_level", ' +
-    "ST_AsGeoJSON(ST_Transform(ST_Centroid(way), 4326)) as center, way " +
-    "FROM planet_osm_point " +
-    "WHERE \"seamark:type\" = 'rock'" +
+    ' SELECT osm_id, "seamark:type", "seamark:name", "seamark:rock:water_level", ' +
+    " ST_AsGeoJSON(ST_Transform(ST_Centroid(way), 4326)) as center, way " +
+    " FROM planet_osm_point " +
+    " WHERE \"seamark:type\" = 'rock'" +
     ")" +
     'SELECT osm_id, "seamark:type", "seamark:name", "seamark:rock:water_level", center ' +
     "FROM rocks " +
-    "WHERE " +
-    "ST_Intersects(" +
-    "ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), " +
-    "ST_Transform(way, 4326)" +
-    ")";
+    "WHERE ST_Intersects(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), ST_Transform(way, 4326))";
 
   db.query(
     SELECT_LIGHTS_QUERY,
