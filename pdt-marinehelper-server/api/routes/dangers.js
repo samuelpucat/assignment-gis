@@ -10,4 +10,6 @@ router.route("/getCardinalSigns").post(dangersController.getCardinalSigns);
 
 router.route("/getSpecialPurposeSigns").post(dangersController.getSpecialPurposeSigns);
 
+router.route("/getLights").post(dangersController.getLights);
+
 module.exports = router;
