@@ -90,8 +90,8 @@ exports.getCardinalSigns = (req, res, next) => {
     geojson: JSON.stringify(req.body.geojson),
     buffer: req.body.buffer
   };
-  let SELECT_CARDINAL_SIGNS_QUERY = 
-  'SELECT osm_id, "seamark:type", "seamark:name", "seamark:buoy_cardinal:category", ' +
+  let SELECT_CARDINAL_SIGNS_QUERY =
+    'SELECT osm_id, "seamark:type", "seamark:name", "seamark:buoy_cardinal:category", ' +
     '"seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
     "ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
     "FROM planet_osm_point " +
@@ -101,22 +101,26 @@ exports.getCardinalSigns = (req, res, next) => {
     "ST_Transform(way, 4326)" +
     ")";
 
-  db.query(SELECT_CARDINAL_SIGNS_QUERY, [queryParams.buffer, queryParams.geojson], (err, res1) => {
-    if (err) {
-      return next(err);
+  db.query(
+    SELECT_CARDINAL_SIGNS_QUERY,
+    [queryParams.buffer, queryParams.geojson],
+    (err, res1) => {
+      if (err) {
+        return next(err);
+      }
+
+      const result = res1.rows.map(row => {
+        const center = JSON.parse(row.center);
+        return { ...row, center };
+      });
+
+      res.status(200).json({
+        message: "cardinal signs fetched",
+        result: result,
+        error: err
+      });
     }
-
-    const result = res1.rows.map(row => {
-      const center = JSON.parse(row.center);
-      return { ...row, center };
-    });
-
-    res.status(200).json({
-      message: "cardinal signs fetched",
-      result: result,
-      error: err
-    });
-  });
+  );
 };
 
 exports.getSpecialPurposeSigns = (req, res, next) => {
@@ -124,8 +128,8 @@ exports.getSpecialPurposeSigns = (req, res, next) => {
     geojson: JSON.stringify(req.body.geojson),
     buffer: req.body.buffer
   };
-  let SELECT_SPECIAL_PURPOSE_SIGNS_QUERY = 
-  'SELECT osm_id, "seamark:type", "seamark:name", "seamark:buoy_cardinal:category", ' +
+  let SELECT_SPECIAL_PURPOSE_SIGNS_QUERY =
+    'SELECT osm_id, "seamark:type", "seamark:name", "seamark:buoy_cardinal:category", ' +
     '"seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
     "ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
     "FROM planet_osm_point " +
@@ -135,22 +139,26 @@ exports.getSpecialPurposeSigns = (req, res, next) => {
     "ST_Transform(way, 4326)" +
     ")";
 
-  db.query(SELECT_SPECIAL_PURPOSE_SIGNS_QUERY, [queryParams.buffer, queryParams.geojson], (err, res1) => {
-    if (err) {
-      return next(err);
+  db.query(
+    SELECT_SPECIAL_PURPOSE_SIGNS_QUERY,
+    [queryParams.buffer, queryParams.geojson],
+    (err, res1) => {
+      if (err) {
+        return next(err);
+      }
+
+      const result = res1.rows.map(row => {
+        const center = JSON.parse(row.center);
+        return { ...row, center };
+      });
+
+      res.status(200).json({
+        message: "special purpose signs fetched",
+        result: result,
+        error: err
+      });
     }
-
-    const result = res1.rows.map(row => {
-      const center = JSON.parse(row.center);
-      return { ...row, center };
-    });
-
-    res.status(200).json({
-      message: "special purpose signs fetched",
-      result: result,
-      error: err
-    });
-  });
+  );
 };
 
 exports.getLights = (req, res, next) => {
@@ -158,8 +166,8 @@ exports.getLights = (req, res, next) => {
     geojson: JSON.stringify(req.body.geojson),
     buffer: req.body.buffer
   };
-  let SELECT_LIGHTS_QUERY = 
-  'SELECT osm_id, "seamark:type", "seamark:name", "seamark:buoy_cardinal:category", ' +
+  let SELECT_LIGHTS_QUERY =
+    'SELECT osm_id, "seamark:type", "seamark:name", ' +
     '"seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
     '"seamark:light:sector_start", "seamark:light:sector_end", "seamark:light:category", "seamark:light:visibility", "seamark:light:exhibition", ' +
     "ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
@@ -170,46 +178,73 @@ exports.getLights = (req, res, next) => {
     "ST_Transform(way, 4326)" +
     ")";
 
-  db.query(SELECT_LIGHTS_QUERY, [queryParams.buffer, queryParams.geojson], (err, res1) => {
-    if (err) {
-      return next(err);
+  db.query(
+    SELECT_LIGHTS_QUERY,
+    [queryParams.buffer, queryParams.geojson],
+    (err, res1) => {
+      if (err) {
+        return next(err);
+      }
+
+      const result = res1.rows.map(row => {
+        const center = JSON.parse(row.center);
+        return { ...row, center };
+      });
+
+      res.status(200).json({
+        message: "lights fetched",
+        result: result,
+        error: err
+      });
     }
-
-    const result = res1.rows.map(row => {
-      const center = JSON.parse(row.center);
-      return { ...row, center };
-    });
-
-    res.status(200).json({
-      message: "lights fetched",
-      result: result,
-      error: err
-    });
-  });
+  );
 };
 
 exports.getRocks = (req, res, next) => {
   const queryParams = {
-    lineString: req.body.lineString
+    geojson: JSON.stringify(req.body.geojson),
+    buffer: req.body.buffer
   };
-  let SELECT_DANGERS_QUERY = "";
+  let SELECT_LIGHTS_QUERY =
+    "WITH rocks AS (" +
+    'SELECT osm_id, "seamark:type", "seamark:name", "seamark:rock:water_level", ' +
+    "ST_AsGeoJSON(ST_Transform(way, 4326)) as center, way " +
+    "FROM planet_osm_point " +
+    "WHERE \"seamark:type\" = 'rock'" +
+    "UNION " +
+    'SELECT osm_id, "seamark:type", "seamark:name", "seamark:rock:water_level", ' +
+    "ST_AsGeoJSON(ST_Transform(ST_Centroid(way), 4326)) as center, way " +
+    "FROM planet_osm_point " +
+    "WHERE \"seamark:type\" = 'rock'" +
+    ")" +
+    'SELECT osm_id, "seamark:type", "seamark:name", "seamark:rock:water_level", center ' +
+    "FROM rocks " +
+    "WHERE " +
+    "ST_Intersects(" +
+    "ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), " +
+    "ST_Transform(way, 4326)" +
+    ")";
 
-  db.query(SELECT_DANGERS_QUERY, [], (err, res1) => {
-    if (err) {
-      return next(err);
+  db.query(
+    SELECT_LIGHTS_QUERY,
+    [queryParams.buffer, queryParams.geojson],
+    (err, res1) => {
+      if (err) {
+        return next(err);
+      }
+
+      const result = res1.rows.map(row => {
+        const center = JSON.parse(row.center);
+        return { ...row, center };
+      });
+
+      res.status(200).json({
+        message: "rocks fetched",
+        result: result,
+        error: err
+      });
     }
-
-    const result = res1.rows.map(row => {
-      const geojson = JSON.parse(row.geojson);
-      return { ...row, geojson };
-    });
-
-    res.status(200).json({
-      message: "dangers fetched",
-      result: result,
-      error: err
-    });
-  });
+  );
 };
 
 exports.getWrecks = (req, res, next) => {

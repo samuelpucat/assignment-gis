@@ -12,4 +12,6 @@ router.route("/getSpecialPurposeSigns").post(dangersController.getSpecialPurpose
 
 router.route("/getLights").post(dangersController.getLights);
 
+router.route("/getRocks").post(dangersController.getRocks);
+
 module.exports = router;
