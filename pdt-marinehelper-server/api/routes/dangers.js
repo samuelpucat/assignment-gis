@@ -6,4 +6,6 @@ router.route("/getIsolatedDangers").post(dangersController.getIsolatedDangers);
 
 router.route("/getLateralSigns").post(dangersController.getLateralSigns);
 
+router.route("/getCardinalSigns").post(dangersController.getCardinalSigns);
+
 module.exports = router;
