@@ -285,24 +285,43 @@ exports.getWrecks = (req, res, next) => {
 
 exports.getCoastLines = (req, res, next) => {
   const queryParams = {
-    lineString: req.body.lineString
+    geojson: JSON.stringify(req.body.geojson),
+    buffer: req.body.buffer
   };
-  let SELECT_DANGERS_QUERY = "";
+  let SELECT_COAST_LINES_QUERY =
+    "WITH coastlines AS (" +
+    ' SELECT osm_id, "natural", way ' +
+    " FROM planet_osm_line " +
+    " WHERE \"natural\" = 'coastline' " +
+    "UNION " +
+    ' SELECT osm_id, "natural", way ' +
+    " FROM planet_osm_polygon " +
+    " WHERE \"natural\" = 'coastline' " +
+    "), buffer AS (" +
+    " SELECT ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1) AS buffer" +
+    ")" +
+    'SELECT cl.osm_id, cl."natural", ST_AsGeoJSON(ST_Intersection(ST_Transform(way, 4326), bu.buffer)) as geometry ' +
+    "FROM coastlines AS cl, buffer AS bu " +
+    "WHERE ST_Intersects(bu.buffer, ST_Transform(way, 4326))"
 
-  db.query(SELECT_DANGERS_QUERY, [], (err, res1) => {
-    if (err) {
-      return next(err);
+  db.query(
+    SELECT_COAST_LINES_QUERY,
+    [queryParams.buffer, queryParams.geojson],
+    (err, res1) => {
+      if (err) {
+        return next(err);
+      }
+
+      const result = res1.rows.map(row => {
+        const geometry = JSON.parse(row.geometry);
+        return { ...row, geometry };
+      });
+
+      res.status(200).json({
+        message: "coast lines fetched",
+        result: result,
+        error: err
+      });
     }
-
-    const result = res1.rows.map(row => {
-      const geojson = JSON.parse(row.geojson);
-      return { ...row, geojson };
-    });
-
-    res.status(200).json({
-      message: "dangers fetched",
-      result: result,
-      error: err
-    });
-  });
+  );
 };
