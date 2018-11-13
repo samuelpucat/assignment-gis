@@ -8,4 +8,6 @@ router.route("/getLateralSigns").post(dangersController.getLateralSigns);
 
 router.route("/getCardinalSigns").post(dangersController.getCardinalSigns);
 
+router.route("/getSpecialPurposeSigns").post(dangersController.getSpecialPurposeSigns);
+
 module.exports = router;
