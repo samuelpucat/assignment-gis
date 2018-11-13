@@ -50,7 +50,7 @@ export const Map = createReactClass({
     harbour: PropTypes.object,
     harbourFacilities: PropTypes.array,
 
-    waypoints: PropTypes.array,
+    wayLine: PropTypes.object,
     isolatedDangers: PropTypes.array,
 
     anchorages: PropTypes.array,
@@ -119,6 +119,19 @@ export const Map = createReactClass({
   },
 
   _showHarbourFacilities() {},
+
+  _showWay() {
+    const wayLine = this.props.wayLine;
+    if (wayLine) {
+      return (
+        <GeoJSONLayer
+          data={wayLine}
+          lineLayout={lineLayout}
+          linePaint={{ "line-color": "blue" }}
+        />
+      );
+    }
+  },
 
   _showIsolatedDangers() {
     const isolatedDangers = this.props.isolatedDangers;
@@ -226,16 +239,20 @@ export const Map = createReactClass({
           width: "100%"
         }}
         onZoomEnd={() => {
-          const zoom = this.map.getZoom();
-          this.setState({
-            zoom: [zoom]
-          });
+          if (this.map) {
+            const zoom = this.map.getZoom();
+            this.setState({
+              zoom: [zoom]
+            });
+          }
         }}
         onMoveEnd={() => {
-          const center = this.map.getCenter();
-          this.setState({
-            center: [center.lng, center.lat]
-          });
+          if (this.map) {
+            const center = this.map.getCenter();
+            this.setState({
+              center: [center.lng, center.lat]
+            });
+          }
         }}
         onClick={(map, evt) => {
           this.props.onClick(evt);
@@ -266,6 +283,7 @@ export const Map = createReactClass({
         {this._showHarbourGeometry()}
         {this._showHarbourFacilities()}
 
+        {this._showWay()}
         {this._showIsolatedDangers()}
 
         {this._showAnchorages()}

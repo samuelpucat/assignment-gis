@@ -16,9 +16,23 @@ export const Scenario = createReactClass({
       scenario,
       open: false,
       activated: null,
+
       startPosition: {},
       endPosition: {},
-      myPosition: [16, 43]
+      showIsolatedDangers: false,
+      showBeacons: false,
+      showRocks: false,
+      showBuoys: false,
+      showWrecks: false,
+      showCardinalSigns: false,
+      showSpecialPurposeSigns: false,
+      showLights: false,
+      showCoastLines: false,
+
+      myPosition: [16, 43],
+      showAnchorages: false,
+      showMoorings: false,
+      showUnderwaterPipesAndCables: false
     };
   },
 
@@ -30,13 +44,11 @@ export const Scenario = createReactClass({
         this._getHarbours();
         break;
       case "dangers":
-        this._getIsolatedDangers();
+        this._getDangers();
         break;
       case "coves":
         if (this.state.myPosition) {
-          this._getAnchorages();
-          this._getMoorings();
-          this._getUnderwaterCablesAndPipes();
+          this._getCoves();
         }
         break;
       default:
@@ -56,12 +68,10 @@ export const Scenario = createReactClass({
           this._getHarbours();
           break;
         case "dangers":
-          this._getIsolatedDangers();
+          this._getDangers();
           break;
         case "coves":
-          this._getAnchorages();
-          this._getMoorings();
-          this._getUnderwaterCablesAndPipes();
+          this._getCoves();
           break;
         default:
           break;
@@ -69,17 +79,25 @@ export const Scenario = createReactClass({
     }
 
     if (this.state.myPosition !== prevState.myPosition) {
-      this._getAnchorages();
-      this._getMoorings();
-      this._getUnderwaterCablesAndPipes();
+      this._getCoves();
     }
 
     if (
       this.state.startPosition !== prevState.startPosition ||
       this.state.endPosition !== prevState.endPosition
     ) {
-      this._getIsolatedDangers();
+      this._getDangers();
     }
+  },
+
+  _getDangers() {
+    this._getIsolatedDangers();
+  },
+
+  _getCoves() {
+    this._getAnchorages();
+    this._getMoorings();
+    this._getUnderwaterCablesAndPipes();
   },
 
   _getScenario() {
@@ -141,7 +159,6 @@ export const Scenario = createReactClass({
           this.setState({
             isolatedDangers: res.data.result
           });
-          console.log(res.data.result);
         })
         .catch(err => {
           console.log(err);
@@ -350,15 +367,80 @@ export const Scenario = createReactClass({
                 </Row>
                 <Row>
                   <h2>{"Choose dangers to show"}</h2>
-                  <Checkbox>{"Isolated dangers"}</Checkbox>
-                  <Checkbox>{"Beacons"}</Checkbox>
-                  <Checkbox>{"Rocks"}</Checkbox>
-                  <Checkbox>{"Buoys"}</Checkbox>
-                  <Checkbox>{"Wrecks"}</Checkbox>
-                  <Checkbox>{"Cardinal signs"}</Checkbox>
-                  <Checkbox>{"Special purpose signs"}</Checkbox>
-                  <Checkbox>{"Lights"}</Checkbox>
-                  <Checkbox>{"Coast lines"}</Checkbox>
+                  <Checkbox
+                    checked={this.state.showIsolatedDangers}
+                    onChange={e =>
+                      this.setState({ showIsolatedDangers: e.target.checked })
+                    }
+                  >
+                    {"Isolated dangers"}
+                  </Checkbox>
+                  <Checkbox
+                    checked={this.state.showBeacons}
+                    onChange={e =>
+                      this.setState({ showBeacons: e.target.checked })
+                    }
+                  >
+                    {"Beacons"}
+                  </Checkbox>
+                  <Checkbox
+                    checked={this.state.showRocks}
+                    onChange={e =>
+                      this.setState({ showRocks: e.target.checked })
+                    }
+                  >
+                    {"Rocks"}
+                  </Checkbox>
+                  <Checkbox
+                    checked={this.state.showBuoys}
+                    onChange={e =>
+                      this.setState({ showBuoys: e.target.checked })
+                    }
+                  >
+                    {"Buoys"}
+                  </Checkbox>
+                  <Checkbox
+                    checked={this.state.showWrecks}
+                    onChange={e =>
+                      this.setState({ showWrecks: e.target.checked })
+                    }
+                  >
+                    {"Wrecks"}
+                  </Checkbox>
+                  <Checkbox
+                    checked={this.state.showCardinalSigns}
+                    onChange={e =>
+                      this.setState({ showCardinalSigns: e.target.checked })
+                    }
+                  >
+                    {"Cardinal signs"}
+                  </Checkbox>
+                  <Checkbox
+                    checked={this.state.showSpecialPurposeSigns}
+                    onChange={e =>
+                      this.setState({
+                        showSpecialPurposeSigns: e.target.checked
+                      })
+                    }
+                  >
+                    {"Special purpose signs"}
+                  </Checkbox>
+                  <Checkbox
+                    checked={this.state.showLights}
+                    onChange={e =>
+                      this.setState({ showLights: e.target.checked })
+                    }
+                  >
+                    {"Lights"}
+                  </Checkbox>
+                  <Checkbox
+                    checked={this.state.showCoastLines}
+                    onChange={e =>
+                      this.setState({ showCoastLines: e.target.checked })
+                    }
+                  >
+                    {"Coast lines"}
+                  </Checkbox>
                 </Row>
               </Col>
             </Grid>
@@ -374,10 +456,32 @@ export const Scenario = createReactClass({
                   <PageHeader>{"Coves"}</PageHeader>
                 </Row>
                 <Row>
-                  <Checkbox>{"Anchorages"}</Checkbox>
-                  <Checkbox>{"Moorings"}</Checkbox>
-                  <Checkbox>{"Show underwater cables/pipes"}</Checkbox>
-                  <Checkbox>{"Show restricted areas"}</Checkbox>
+                  <Checkbox
+                    checked={this.state.showAnchorages}
+                    onChange={e =>
+                      this.setState({ showAnchorages: e.target.checked })
+                    }
+                  >
+                    {"Anchorages"}
+                  </Checkbox>
+                  <Checkbox
+                    checked={this.state.showMoorings}
+                    onChange={e =>
+                      this.setState({ showMoorings: e.target.checked })
+                    }
+                  >
+                    {"Moorings"}
+                  </Checkbox>
+                  <Checkbox
+                    checked={this.state.showUnderwaterPipesAndCables}
+                    onChange={e =>
+                      this.setState({
+                        showUnderwaterPipesAndCables: e.target.checked
+                      })
+                    }
+                  >
+                    {"Show underwater cables/pipes"}
+                  </Checkbox>
                 </Row>
               </Col>
             </Grid>
@@ -386,6 +490,24 @@ export const Scenario = createReactClass({
         break;
       default:
         controls = null;
+    }
+
+    let startPosition = this.state.startPosition;
+    let endPosition = this.state.endPosition;
+    let wayLine = null;
+    if (
+      startPosition.hasOwnProperty("lat") &&
+      startPosition.hasOwnProperty("lng") &&
+      endPosition.hasOwnProperty("lat") &&
+      endPosition.hasOwnProperty("lng")
+    ) {
+      wayLine = {
+        type: "LineString",
+        coordinates: [
+          [startPosition.lng, startPosition.lat],
+          [endPosition.lng, endPosition.lat]
+        ]
+      };
     }
 
     return (
@@ -403,20 +525,26 @@ export const Scenario = createReactClass({
           harbour={
             this.state.scenario === "harbours" ? this.state.harbour : null
           }
-          anchorages={
-            this.state.scenario === "coves" ? this.state.anchorages : null
-          }
-          moorings={
-            this.state.scenario === "coves" ? this.state.moorings : null
-          }
-          underwaterCablesAndPipes={
-            this.state.scenario === "coves"
-              ? this.state.underwaterCablesAndPipes
+          wayLine={this.state.scenario === "dangers" ? wayLine : null}
+          isolatedDangers={
+            this.state.scenario === "dangers" && this.state.showIsolatedDangers
+              ? this.state.isolatedDangers
               : null
           }
-          isolatedDangers={
-            this.state.scenario === "dangers"
-              ? this.state.isolatedDangers
+          anchorages={
+            this.state.scenario === "coves" && this.state.showAnchorages
+              ? this.state.anchorages
+              : null
+          }
+          moorings={
+            this.state.scenario === "coves" && this.state.showMoorings
+              ? this.state.moorings
+              : null
+          }
+          underwaterCablesAndPipes={
+            this.state.scenario === "coves" &&
+            this.state.showUnderwaterPipesAndCables
+              ? this.state.underwaterCablesAndPipes
               : null
           }
         />
