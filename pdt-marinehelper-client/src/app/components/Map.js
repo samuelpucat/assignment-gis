@@ -52,6 +52,7 @@ export const Map = createReactClass({
 
     wayLine: PropTypes.object,
     isolatedDangers: PropTypes.array,
+    lateralSigns: PropTypes.array,
 
     anchorages: PropTypes.array,
     moorings: PropTypes.array,
@@ -149,6 +150,30 @@ export const Map = createReactClass({
               <img
                 src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
                 alt="isolated danger"
+              />
+            </div>
+          </Marker>
+        );
+      });
+    }
+  },
+
+  _showLateralSigns(){
+    const lateralSigns = this.props.lateralSigns;
+    if (lateralSigns) {
+      return lateralSigns.map((lateralSign, i) => {
+        return (
+          <Marker
+            key={i}
+            coordinates={lateralSign.center.coordinates}
+            anchor="bottom"
+          >
+            {"lateral sign"}
+            <br />
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <img
+                src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
+                alt="lateral sign"
               />
             </div>
           </Marker>
@@ -285,6 +310,7 @@ export const Map = createReactClass({
 
         {this._showWay()}
         {this._showIsolatedDangers()}
+        {this._showLateralSigns()}
 
         {this._showAnchorages()}
         {this._showMoorings()}

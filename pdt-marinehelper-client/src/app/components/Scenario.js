@@ -20,13 +20,12 @@ export const Scenario = createReactClass({
       startPosition: {},
       endPosition: {},
       showIsolatedDangers: false,
-      showBeacons: false,
-      showRocks: false,
-      showBuoys: false,
-      showWrecks: false,
+      showLateralSigns: false,
       showCardinalSigns: false,
       showSpecialPurposeSigns: false,
       showLights: false,
+      showRocks: false,
+      showWrecks: false,
       showCoastLines: false,
 
       myPosition: [16, 43],
@@ -90,16 +89,6 @@ export const Scenario = createReactClass({
     }
   },
 
-  _getDangers() {
-    this._getIsolatedDangers();
-  },
-
-  _getCoves() {
-    this._getAnchorages();
-    this._getMoorings();
-    this._getUnderwaterCablesAndPipes();
-  },
-
   _getScenario() {
     let parsedUrl = new URL(window.location.href);
     return parsedUrl.searchParams.get("scenario");
@@ -138,7 +127,7 @@ export const Scenario = createReactClass({
       });
   },
 
-  _getIsolatedDangers() {
+  _getDangers() {
     let startPosition = this.state.startPosition;
     let endPosition = this.state.endPosition;
     if (
@@ -147,31 +136,62 @@ export const Scenario = createReactClass({
       endPosition.hasOwnProperty("lat") &&
       endPosition.hasOwnProperty("lng")
     ) {
-      axios
-        .post(`http://localhost:3001/dangers/getIsolatedDangers`, {
-          points: [
-            [startPosition.lng, startPosition.lat],
-            [endPosition.lng, endPosition.lat]
-          ],
-          buffer: 1000
-        })
-        .then(res => {
-          this.setState({
-            isolatedDangers: res.data.result
-          });
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      const geojson = {
+        type: "LineString",
+        coordinates: [
+          [startPosition.lng, startPosition.lat],
+          [endPosition.lng, endPosition.lat]
+        ]
+      };
+      this._getIsolatedDangers(geojson);
+      this._getLateralSigns(geojson);
     }
+  },
+
+  _getIsolatedDangers(geojson) {
+    axios
+      .post(`http://localhost:3001/dangers/getIsolatedDangers`, {
+        geojson: geojson,
+        buffer: 1000
+      })
+      .then(res => {
+        this.setState({
+          isolatedDangers: res.data.result
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  },
+
+  _getLateralSigns(geojson){
+    axios
+    .post(`http://localhost:3001/dangers/getLateralSigns`, {
+      geojson: geojson,
+      buffer: 1000
+    })
+    .then(res => {
+      this.setState({
+        lateralSigns: res.data.result
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  },
+
+  _getCoves() {
+    this._getAnchorages();
+    this._getMoorings();
+    this._getUnderwaterCablesAndPipes();
   },
 
   _getAnchorages() {
     axios
       .get("http://localhost:3001/coves/getNearbyAnchorages", {
         params: {
-          lat: this.state.myPosition[1],
           lng: this.state.myPosition[0],
+          lat: this.state.myPosition[1],
           maxDistance: 30000
         }
       })
@@ -376,36 +396,12 @@ export const Scenario = createReactClass({
                     {"Isolated dangers"}
                   </Checkbox>
                   <Checkbox
-                    checked={this.state.showBeacons}
+                    checked={this.state.showLateralSigns}
                     onChange={e =>
-                      this.setState({ showBeacons: e.target.checked })
+                      this.setState({ showLateralSigns: e.target.checked })
                     }
                   >
-                    {"Beacons"}
-                  </Checkbox>
-                  <Checkbox
-                    checked={this.state.showRocks}
-                    onChange={e =>
-                      this.setState({ showRocks: e.target.checked })
-                    }
-                  >
-                    {"Rocks"}
-                  </Checkbox>
-                  <Checkbox
-                    checked={this.state.showBuoys}
-                    onChange={e =>
-                      this.setState({ showBuoys: e.target.checked })
-                    }
-                  >
-                    {"Buoys"}
-                  </Checkbox>
-                  <Checkbox
-                    checked={this.state.showWrecks}
-                    onChange={e =>
-                      this.setState({ showWrecks: e.target.checked })
-                    }
-                  >
-                    {"Wrecks"}
+                    {"Lateral signs"}
                   </Checkbox>
                   <Checkbox
                     checked={this.state.showCardinalSigns}
@@ -432,6 +428,22 @@ export const Scenario = createReactClass({
                     }
                   >
                     {"Lights"}
+                  </Checkbox>
+                  <Checkbox
+                    checked={this.state.showRocks}
+                    onChange={e =>
+                      this.setState({ showRocks: e.target.checked })
+                    }
+                  >
+                    {"Rocks"}
+                  </Checkbox>
+                  <Checkbox
+                    checked={this.state.showWrecks}
+                    onChange={e =>
+                      this.setState({ showWrecks: e.target.checked })
+                    }
+                  >
+                    {"Wrecks"}
                   </Checkbox>
                   <Checkbox
                     checked={this.state.showCoastLines}
@@ -529,6 +541,11 @@ export const Scenario = createReactClass({
           isolatedDangers={
             this.state.scenario === "dangers" && this.state.showIsolatedDangers
               ? this.state.isolatedDangers
+              : null
+          }
+          lateralSigns={
+            this.state.scenario === "dangers" && this.state.showLateralSigns
+              ? this.state.lateralSigns
               : null
           }
           anchorages={

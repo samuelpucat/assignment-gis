@@ -3,23 +3,17 @@ const db = require("../../db");
 /*
 input:
 {
-  points: [[16, 43], [16.5, 43]],
+  geojson
   buffer
 }
 */
 
-function getLineString(points) {
-  return `'SRID=4326; LINESTRING(${points
-    .map(point => point.join(" "))
-    .join(", ")})'`;
-}
-
 exports.getIsolatedDangers = (req, res, next) => {
   const queryParams = {
-    points: req.body.points,
+    geojson: JSON.stringify(req.body.geojson),
     buffer: req.body.buffer
   };
-  const lineString = getLineString(queryParams.points);
+
   const SELECT_ISOLATED_DANGERS_QUERY =
     'SELECT osm_id, "seamark:type", "seamark:name", ' +
     '"seamark:light:height", "seamark:light:colour", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
@@ -27,77 +21,71 @@ exports.getIsolatedDangers = (req, res, next) => {
     "FROM planet_osm_point " +
     "WHERE \"seamark:type\" like '%_isolated_danger' AND " +
     "ST_Intersects(" +
-    `ST_Buffer(ST_GeographyFromText(${lineString}), $1), ` +
+    "ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), " +
     "ST_Transform(way, 4326)" +
     ")";
 
-  db.query(SELECT_ISOLATED_DANGERS_QUERY, [queryParams.buffer], (err, res1) => {
-    if (err) {
-      return next(err);
+  db.query(
+    SELECT_ISOLATED_DANGERS_QUERY,
+    [queryParams.buffer, queryParams.geojson],
+    (err, res1) => {
+      if (err) {
+        return next(err);
+      }
+
+      const result = res1.rows.map(row => {
+        const center = JSON.parse(row.center);
+        return { ...row, center };
+      });
+
+      res.status(200).json({
+        message: "isolated dangers fetched",
+        result: result,
+        error: err
+      });
     }
-
-    const result = res1.rows.map(row => {
-      const center = JSON.parse(row.center);
-      return { ...row, center };
-    });
-
-    res.status(200).json({
-      message: "isolated dangers fetched",
-      result: result,
-      error: err
-    });
-  });
+  );
 };
 
-exports.getBeacons = (req, res, next) => {
+exports.getLateralSigns = (req, res, next) => {
   const queryParams = {
-    lineString: req.body.lineString
+    geojson: JSON.stringify(req.body.geojson),
+    buffer: req.body.buffer
   };
-  let SELECT_DANGERS_QUERY = "";
+  let SELECT_LATERAL_SIGNS_QUERY =
+    'SELECT osm_id, "seamark:type", "seamark:name", ' +
+    '"seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
+    "ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
+    "FROM planet_osm_point " +
+    "WHERE \"seamark:type\" like '%_lateral' AND " +
+    "ST_Intersects(" +
+    "ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), " +
+    "ST_Transform(way, 4326)" +
+    ")";
 
-  db.query(SELECT_DANGERS_QUERY, [], (err, res1) => {
-    if (err) {
-      return next(err);
+  db.query(
+    SELECT_LATERAL_SIGNS_QUERY,
+    [queryParams.buffer, queryParams.geojson],
+    (err, res1) => {
+      if (err) {
+        return next(err);
+      }
+
+      const result = res1.rows.map(row => {
+        const center = JSON.parse(row.center);
+        return { ...row, center };
+      });
+
+      res.status(200).json({
+        message: "lateral signs fetched",
+        result: result,
+        error: err
+      });
     }
-
-    const result = res1.rows.map(row => {
-      const geojson = JSON.parse(row.geojson);
-      return { ...row, geojson };
-    });
-
-    res.status(200).json({
-      message: "dangers fetched",
-      result: result,
-      error: err
-    });
-  });
+  );
 };
 
 exports.getRocks = (req, res, next) => {
-  const queryParams = {
-    lineString: req.body.lineString
-  };
-  let SELECT_DANGERS_QUERY = "";
-
-  db.query(SELECT_DANGERS_QUERY, [], (err, res1) => {
-    if (err) {
-      return next(err);
-    }
-
-    const result = res1.rows.map(row => {
-      const geojson = JSON.parse(row.geojson);
-      return { ...row, geojson };
-    });
-
-    res.status(200).json({
-      message: "dangers fetched",
-      result: result,
-      error: err
-    });
-  });
-};
-
-exports.getBuoys = (req, res, next) => {
   const queryParams = {
     lineString: req.body.lineString
   };
