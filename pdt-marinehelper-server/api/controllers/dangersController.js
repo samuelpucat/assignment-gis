@@ -249,26 +249,38 @@ exports.getRocks = (req, res, next) => {
 
 exports.getWrecks = (req, res, next) => {
   const queryParams = {
-    lineString: req.body.lineString
+    geojson: JSON.stringify(req.body.geojson),
+    buffer: req.body.buffer
   };
-  let SELECT_DANGERS_QUERY = "";
+  let SELECT_WRECKS_QUERY =
+    'SELECT osm_id,  name, "seamark:type", "seamark:name", "seamark:wreck:category", "sport", ST_AsGeoJSON(ST_Transform(way, 4326)) as center ' +
+    "FROM planet_osm_point " +
+    "WHERE \"seamark:type\" = 'wreck' AND " +
+    "ST_Intersects(" +
+    "ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), " +
+    "ST_Transform(way, 4326)" +
+    ")";
 
-  db.query(SELECT_DANGERS_QUERY, [], (err, res1) => {
-    if (err) {
-      return next(err);
+  db.query(
+    SELECT_WRECKS_QUERY,
+    [queryParams.buffer, queryParams.geojson],
+    (err, res1) => {
+      if (err) {
+        return next(err);
+      }
+
+      const result = res1.rows.map(row => {
+        const center = JSON.parse(row.center);
+        return { ...row, center };
+      });
+
+      res.status(200).json({
+        message: "wrecks fetched",
+        result: result,
+        error: err
+      });
     }
-
-    const result = res1.rows.map(row => {
-      const geojson = JSON.parse(row.geojson);
-      return { ...row, geojson };
-    });
-
-    res.status(200).json({
-      message: "dangers fetched",
-      result: result,
-      error: err
-    });
-  });
+  );
 };
 
 exports.getCoastLines = (req, res, next) => {

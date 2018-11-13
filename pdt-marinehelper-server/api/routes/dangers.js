@@ -14,4 +14,6 @@ router.route("/getLights").post(dangersController.getLights);
 
 router.route("/getRocks").post(dangersController.getRocks);
 
+router.route("/getWrecks").post(dangersController.getWrecks);
+
 module.exports = router;
