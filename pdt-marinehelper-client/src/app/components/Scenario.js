@@ -145,6 +145,12 @@ export const Scenario = createReactClass({
       };
       this._getIsolatedDangers(geojson);
       this._getLateralSigns(geojson);
+      this._getCardinalSigns(geojson);
+      this._getSpecialPurposeSigns(geojson);
+      this._getLights(geojson);
+      this._getRocks(geojson);
+      this._getWrecks(geojson);
+      this._getCoastLines(geojson);
     }
   },
 
@@ -164,15 +170,106 @@ export const Scenario = createReactClass({
       });
   },
 
-  _getLateralSigns(geojson){
+  _getLateralSigns(geojson) {
     axios
-    .post(`http://localhost:3001/dangers/getLateralSigns`, {
+      .post(`http://localhost:3001/dangers/getLateralSigns`, {
+        geojson: geojson,
+        buffer: 1000
+      })
+      .then(res => {
+        this.setState({
+          lateralSigns: res.data.result
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  },
+
+  _getCardinalSigns(geojson) {
+    axios
+      .post(`http://localhost:3001/dangers/getCardinalSigns`, {
+        geojson: geojson,
+        buffer: 1000
+      })
+      .then(res => {
+        this.setState({
+          cardinalSigns: res.data.result
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  },
+  _getSpecialPurposeSigns(geojson) {
+    axios
+    .post(`http://localhost:3001/dangers/getSpecialPurposeSigns`, {
       geojson: geojson,
       buffer: 1000
     })
     .then(res => {
       this.setState({
-        lateralSigns: res.data.result
+        specialPurposeSigns: res.data.result
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  },
+  _getLights(geojson) {
+    axios
+    .post(`http://localhost:3001/dangers/getLights`, {
+      geojson: geojson,
+      buffer: 1000
+    })
+    .then(res => {
+      this.setState({
+        lights: res.data.result
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  },
+  _getRocks(geojson) {
+    axios
+    .post(`http://localhost:3001/dangers/getRocks`, {
+      geojson: geojson,
+      buffer: 1000
+    })
+    .then(res => {
+      this.setState({
+        rocks: res.data.result
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  },
+  _getWrecks(geojson) {
+    axios
+    .post(`http://localhost:3001/dangers/getWrecks`, {
+      geojson: geojson,
+      buffer: 1000
+    })
+    .then(res => {
+      this.setState({
+        wrecks: res.data.result
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  },
+  _getCoastLines(geojson) {
+    axios
+    .post(`http://localhost:3001/dangers/getCoastlines`, {
+      geojson: geojson,
+      buffer: 50
+    })
+    .then(res => {
+      this.setState({
+        coastLines: res.data.result
       });
     })
     .catch(err => {
@@ -546,6 +643,36 @@ export const Scenario = createReactClass({
           lateralSigns={
             this.state.scenario === "dangers" && this.state.showLateralSigns
               ? this.state.lateralSigns
+              : null
+          }
+          cardinalSigns={
+            this.state.scenario === "dangers" && this.state.showCardinalSigns
+              ? this.state.cardinalSigns
+              : null
+          }
+          specialPurposeSigns={
+            this.state.scenario === "dangers" && this.state.showSpecialPurposeSigns
+              ? this.state.specialPurposeSigns
+              : null
+          }
+          lights={
+            this.state.scenario === "dangers" && this.state.showLights
+              ? this.state.lights
+              : null
+          }
+          rocks={
+            this.state.scenario === "dangers" && this.state.showRocks
+              ? this.state.rocks
+              : null
+          }
+          wrecks={
+            this.state.scenario === "dangers" && this.state.showWrecks
+              ? this.state.wrecks
+              : null
+          }
+          coastLines={
+            this.state.scenario === "dangers" && this.state.showCoastLines
+              ? this.state.coastLines
               : null
           }
           anchorages={

@@ -53,6 +53,12 @@ export const Map = createReactClass({
     wayLine: PropTypes.object,
     isolatedDangers: PropTypes.array,
     lateralSigns: PropTypes.array,
+    cardinalSigns: PropTypes.array,
+    specialPurposeSigns: PropTypes.array,
+    lights: PropTypes.array,
+    rocks: PropTypes.array,
+    wrecks: PropTypes.array,
+    coastLines: PropTypes.array,
 
     anchorages: PropTypes.array,
     moorings: PropTypes.array,
@@ -158,7 +164,7 @@ export const Map = createReactClass({
     }
   },
 
-  _showLateralSigns(){
+  _showLateralSigns() {
     const lateralSigns = this.props.lateralSigns;
     if (lateralSigns) {
       return lateralSigns.map((lateralSign, i) => {
@@ -177,6 +183,133 @@ export const Map = createReactClass({
               />
             </div>
           </Marker>
+        );
+      });
+    }
+  },
+
+  _showCardinalSigns() {
+    const cardinalSigns = this.props.cardinalSigns;
+    if (cardinalSigns) {
+      return cardinalSigns.map((cardinalSign, i) => {
+        return (
+          <Marker
+            key={i}
+            coordinates={cardinalSign.center.coordinates}
+            anchor="bottom"
+          >
+            {"cardinal sign"}
+            <br />
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <img
+                src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
+                alt="lateral sign"
+              />
+            </div>
+          </Marker>
+        );
+      });
+    }
+  },
+  _showSpecialPurposeSigns() {
+    const specialPurposeSigns = this.props.specialPurposeSigns;
+    if (specialPurposeSigns) {
+      return specialPurposeSigns.map((specialPurposeSign, i) => {
+        return (
+          <Marker
+            key={i}
+            coordinates={specialPurposeSign.center.coordinates}
+            anchor="bottom"
+          >
+            {"special purpose sign"}
+            <br />
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <img
+                src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
+                alt="lateral sign"
+              />
+            </div>
+          </Marker>
+        );
+      });
+    }
+  },
+  _showLights() {
+    const lights = this.props.lights;
+    if (lights) {
+      return lights.map((light, i) => {
+        return (
+          <Marker
+            key={i}
+            coordinates={light.center.coordinates}
+            anchor="bottom"
+          >
+            {"light"}
+            <br />
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <img
+                src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
+                alt="lateral sign"
+              />
+            </div>
+          </Marker>
+        );
+      });
+    }
+  },
+  _showRocks() {
+    const rocks = this.props.rocks;
+    if (rocks) {
+      return rocks.map((rock, i) => {
+        return (
+          <Marker key={i} coordinates={rock.center.coordinates} anchor="bottom">
+            {"rock"}
+            <br />
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <img
+                src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
+                alt="lateral sign"
+              />
+            </div>
+          </Marker>
+        );
+      });
+    }
+  },
+  _showWrecks() {
+    const wrecks = this.props.wrecks;
+    if (wrecks) {
+      return wrecks.map((wreck, i) => {
+        return (
+          <Marker
+            key={i}
+            coordinates={wreck.center.coordinates}
+            anchor="bottom"
+          >
+            {"wreck"}
+            <br />
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <img
+                src={"http://maps.google.com/mapfiles/ms/icons/blue.png"}
+                alt="lateral sign"
+              />
+            </div>
+          </Marker>
+        );
+      });
+    }
+  },
+  _showCoastLines() {
+    const coastLines = this.props.coastLines;
+    if (coastLines) {
+      return coastLines.map((coastLine, i) => {
+        return (
+          <GeoJSONLayer
+            key={i}
+            data={coastLine.geometry}
+            lineLayout={lineLayout}
+            linePaint={{ "line-color": "red", "line-width": 5 }}
+          />
         );
       });
     }
@@ -239,14 +372,54 @@ export const Map = createReactClass({
             key={i}
             data={pac.geometry}
             lineLayout={lineLayout}
-            linePaint={{ "line-color": "red" }}
+            linePaint={{ "line-color": "red"}}
           />
         );
       });
     }
   },
 
-  _showRestrictedAreas() {},
+  _showLineString() {
+    let gj = {
+      type: "Polygon",
+      coordinates: [
+        [
+          [13.9440558, 44.7731266004883],
+          [13.9443121, 44.7737070004883],
+          [13.9443205, 44.7744186004882],
+          [13.9444071, 44.7746906004882],
+          [13.9446404, 44.7749119004882],
+          [13.9455877, 44.7754511004881],
+          [13.9467685, 44.7754772004881],
+          [13.9472326, 44.7748024004882],
+          [13.9474532, 44.7736356004883],
+          [13.9478833, 44.7735964004883],
+          [13.948104, 44.7737139004883],
+          [13.9481922, 44.7735181004883],
+          [13.9487547, 44.7733928004883],
+          [13.9493063, 44.7730405004883],
+          [13.9493283, 44.7727351004883],
+          [13.9497144, 44.7724532004884],
+          [13.9495339, 44.7719107004884],
+          [13.9490602, 44.7705986004885],
+          [13.9479537, 44.7697150004886],
+          [13.9469036, 44.7693790004886],
+          [13.9454353, 44.7695640004886],
+          [13.9449298, 44.7707543004885],
+          [13.9450154, 44.7719520004884],
+          [13.9442352, 44.7722488004884],
+          [13.9440558, 44.7731266004883]
+        ]
+      ]
+    };
+    return (
+      <GeoJSONLayer
+        data={gj}
+        lineLayout={lineLayout}
+        linePaint={{ "line-color": "red", "line-width": 5 }}
+      />
+    );
+  },
 
   render() {
     const ship = new Image();
@@ -311,11 +484,18 @@ export const Map = createReactClass({
         {this._showWay()}
         {this._showIsolatedDangers()}
         {this._showLateralSigns()}
+        {this._showCardinalSigns()}
+        {this._showSpecialPurposeSigns()}
+        {this._showLights()}
+        {this._showRocks()}
+        {this._showWrecks()}
+        {this._showCoastLines()}
 
         {this._showAnchorages()}
         {this._showMoorings()}
         {this._showUnderwaterPipesAndCables()}
-        {this._showRestrictedAreas()}
+
+        {this._showLineString()}
       </Mapbox>
     );
   }
