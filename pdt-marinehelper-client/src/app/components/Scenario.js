@@ -17,21 +17,14 @@ export const Scenario = createReactClass({
       open: false,
       activated: null,
 
+      showFacilities: [],
+
       startPosition: {},
       endPosition: {},
-      showIsolatedDangers: false,
-      showLateralSigns: false,
-      showCardinalSigns: false,
-      showSpecialPurposeSigns: false,
-      showLights: false,
-      showRocks: false,
-      showWrecks: false,
-      showCoastLines: false,
+      showDangers: [],
 
       myPosition: [16, 43],
-      showAnchorages: false,
-      showMoorings: false,
-      showUnderwaterPipesAndCables: false
+      showCoves: []
     };
   },
 
@@ -101,8 +94,13 @@ export const Scenario = createReactClass({
   },
 
   _getHarbours() {
+    let facilities = this.state.showFacilities;
+
     axios
-      .get("http://localhost:3001/harbours/getAllHarbours")
+      .post("http://localhost:3001/harbours/getAllWithFacilities", {
+        buffer: 100,
+        facilities: facilities
+      })
       .then(res => {
         this.setState({
           harbours: res.data.result
@@ -127,7 +125,7 @@ export const Scenario = createReactClass({
       });
   },
 
-  _getDangers() {
+  _getDangers(arg) {
     let startPosition = this.state.startPosition;
     let endPosition = this.state.endPosition;
     if (
@@ -143,201 +141,230 @@ export const Scenario = createReactClass({
           [endPosition.lng, endPosition.lat]
         ]
       };
-      this._getIsolatedDangers(geojson);
-      this._getLateralSigns(geojson);
-      this._getCardinalSigns(geojson);
-      this._getSpecialPurposeSigns(geojson);
-      this._getLights(geojson);
-      this._getRocks(geojson);
-      this._getWrecks(geojson);
-      this._getCoastLines(geojson);
+      console.log(arg === "isolatedDangers", arg === undefined);
+      if (arg === "isolatedDangers" || arg === undefined)
+        this._getIsolatedDangers(geojson);
+      if (arg === "lateralSigns" || arg === undefined)
+        this._getLateralSigns(geojson);
+      if (arg === "cardinalSigns" || arg === undefined)
+        this._getCardinalSigns(geojson);
+      if (arg === "specialPurposeSigns" || arg === undefined)
+        this._getSpecialPurposeSigns(geojson);
+      if (arg === "lights" || arg === undefined) this._getLights(geojson);
+      if (arg === "rocks" || arg === undefined) this._getRocks(geojson);
+      if (arg === "wrecks" || arg === undefined) this._getWrecks(geojson);
+      if (arg === "coastLines" || arg === undefined)
+        this._getCoastLines(geojson);
     }
   },
 
   _getIsolatedDangers(geojson) {
-    axios
-      .post(`http://localhost:3001/dangers/getIsolatedDangers`, {
-        geojson: geojson,
-        buffer: 1000
-      })
-      .then(res => {
-        this.setState({
-          isolatedDangers: res.data.result
+    if (this.state.showDangers.includes("isolatedDangers")) {
+      axios
+        .post(`http://localhost:3001/dangers/getIsolatedDangers`, {
+          geojson: geojson,
+          buffer: 1000
+        })
+        .then(res => {
+          this.setState({
+            isolatedDangers: res.data.result
+          });
+        })
+        .catch(err => {
+          console.log(err);
         });
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    }
   },
 
   _getLateralSigns(geojson) {
-    axios
-      .post(`http://localhost:3001/dangers/getLateralSigns`, {
-        geojson: geojson,
-        buffer: 1000
-      })
-      .then(res => {
-        this.setState({
-          lateralSigns: res.data.result
+    if (this.state.showDangers.includes("lateralSigns")) {
+      axios
+        .post(`http://localhost:3001/dangers/getLateralSigns`, {
+          geojson: geojson,
+          buffer: 1000
+        })
+        .then(res => {
+          this.setState({
+            lateralSigns: res.data.result
+          });
+        })
+        .catch(err => {
+          console.log(err);
         });
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    }
   },
 
   _getCardinalSigns(geojson) {
-    axios
-      .post(`http://localhost:3001/dangers/getCardinalSigns`, {
-        geojson: geojson,
-        buffer: 1000
-      })
-      .then(res => {
-        this.setState({
-          cardinalSigns: res.data.result
+    if (this.state.showDangers.includes("cardinalSigns")) {
+      axios
+        .post(`http://localhost:3001/dangers/getCardinalSigns`, {
+          geojson: geojson,
+          buffer: 1000
+        })
+        .then(res => {
+          this.setState({
+            cardinalSigns: res.data.result
+          });
+        })
+        .catch(err => {
+          console.log(err);
         });
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    }
   },
   _getSpecialPurposeSigns(geojson) {
-    axios
-    .post(`http://localhost:3001/dangers/getSpecialPurposeSigns`, {
-      geojson: geojson,
-      buffer: 1000
-    })
-    .then(res => {
-      this.setState({
-        specialPurposeSigns: res.data.result
-      });
-    })
-    .catch(err => {
-      console.log(err);
-    });
+    if (this.state.showDangers.includes("specialPurposeSigns")) {
+      axios
+        .post(`http://localhost:3001/dangers/getSpecialPurposeSigns`, {
+          geojson: geojson,
+          buffer: 1000
+        })
+        .then(res => {
+          this.setState({
+            specialPurposeSigns: res.data.result
+          });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   },
   _getLights(geojson) {
-    axios
-    .post(`http://localhost:3001/dangers/getLights`, {
-      geojson: geojson,
-      buffer: 1000
-    })
-    .then(res => {
-      this.setState({
-        lights: res.data.result
-      });
-    })
-    .catch(err => {
-      console.log(err);
-    });
+    if (this.state.showDangers.includes("lights")) {
+      axios
+        .post(`http://localhost:3001/dangers/getLights`, {
+          geojson: geojson,
+          buffer: 1000
+        })
+        .then(res => {
+          this.setState({
+            lights: res.data.result
+          });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   },
   _getRocks(geojson) {
-    axios
-    .post(`http://localhost:3001/dangers/getRocks`, {
-      geojson: geojson,
-      buffer: 1000
-    })
-    .then(res => {
-      this.setState({
-        rocks: res.data.result
-      });
-    })
-    .catch(err => {
-      console.log(err);
-    });
+    if (this.state.showDangers.includes("rocks")) {
+      axios
+        .post(`http://localhost:3001/dangers/getRocks`, {
+          geojson: geojson,
+          buffer: 1000
+        })
+        .then(res => {
+          this.setState({
+            rocks: res.data.result
+          });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   },
   _getWrecks(geojson) {
-    axios
-    .post(`http://localhost:3001/dangers/getWrecks`, {
-      geojson: geojson,
-      buffer: 1000
-    })
-    .then(res => {
-      this.setState({
-        wrecks: res.data.result
-      });
-    })
-    .catch(err => {
-      console.log(err);
-    });
+    if (this.state.showDangers.includes("wrecks")) {
+      axios
+        .post(`http://localhost:3001/dangers/getWrecks`, {
+          geojson: geojson,
+          buffer: 1000
+        })
+        .then(res => {
+          this.setState({
+            wrecks: res.data.result
+          });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   },
   _getCoastLines(geojson) {
-    axios
-    .post(`http://localhost:3001/dangers/getCoastlines`, {
-      geojson: geojson,
-      buffer: 50
-    })
-    .then(res => {
-      this.setState({
-        coastLines: res.data.result
-      });
-    })
-    .catch(err => {
-      console.log(err);
-    });
+    if (this.state.showDangers.includes("coastLines")) {
+      axios
+        .post(`http://localhost:3001/dangers/getCoastlines`, {
+          geojson: geojson,
+          buffer: 50
+        })
+        .then(res => {
+          this.setState({
+            coastLines: res.data.result
+          });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   },
 
-  _getCoves() {
-    this._getAnchorages();
-    this._getMoorings();
-    this._getUnderwaterCablesAndPipes();
+  _getCoves(arg) {
+    if (arg === "anchorages" || arg === undefined) this._getAnchorages();
+    if (arg === "moorings" || arg === undefined) this._getMoorings();
+    if (arg === "underwaterCableAndPipes" || arg === undefined)
+      this._getUnderwaterCablesAndPipes();
   },
 
   _getAnchorages() {
-    axios
-      .get("http://localhost:3001/coves/getNearbyAnchorages", {
-        params: {
-          lng: this.state.myPosition[0],
-          lat: this.state.myPosition[1],
-          maxDistance: 30000
-        }
-      })
-      .then(res => {
-        this.setState({
-          anchorages: res.data.result
+    if (this.state.showCoves.includes("anchorages")) {
+      axios
+        .get("http://localhost:3001/coves/getNearbyAnchorages", {
+          params: {
+            lng: this.state.myPosition[0],
+            lat: this.state.myPosition[1],
+            maxDistance: 30000
+          }
+        })
+        .then(res => {
+          this.setState({
+            anchorages: res.data.result
+          });
+        })
+        .catch(err => {
+          console.log(err);
         });
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    }
   },
 
   _getMoorings() {
-    axios
-      .get("http://localhost:3001/coves/getNearbyMoorings", {
-        params: {
-          lat: this.state.myPosition[1],
-          lng: this.state.myPosition[0],
-          maxDistance: 30000
-        }
-      })
-      .then(res => {
-        this.setState({
-          moorings: res.data.result
+    if (this.state.showCoves.includes("moorings")) {
+      axios
+        .get("http://localhost:3001/coves/getNearbyMoorings", {
+          params: {
+            lat: this.state.myPosition[1],
+            lng: this.state.myPosition[0],
+            maxDistance: 30000
+          }
+        })
+        .then(res => {
+          this.setState({
+            moorings: res.data.result
+          });
+        })
+        .catch(err => {
+          console.log(err);
         });
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    }
   },
 
   _getUnderwaterCablesAndPipes() {
-    axios
-      .get("http://localhost:3001/coves/getNearbyUnderwaterCablesAndPipes", {
-        params: {
-          lat: this.state.myPosition[1],
-          lng: this.state.myPosition[0],
-          maxDistance: 30000
-        }
-      })
-      .then(res => {
-        this.setState({
-          underwaterCablesAndPipes: res.data.result
+    if (this.state.showCoves.includes("underwaterCableAndPipes")) {
+      axios
+        .get("http://localhost:3001/coves/getNearbyUnderwaterCablesAndPipes", {
+          params: {
+            lat: this.state.myPosition[1],
+            lng: this.state.myPosition[0],
+            maxDistance: 30000
+          }
+        })
+        .then(res => {
+          this.setState({
+            underwaterCablesAndPipes: res.data.result
+          });
+        })
+        .catch(err => {
+          console.log(err);
         });
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    }
   },
 
   _handleMapClick(evt) {
@@ -362,6 +389,48 @@ export const Scenario = createReactClass({
     const scenario = this.state.scenario;
     switch (scenario) {
       case "harbours":
+        const facilities = [
+          {
+            name: "Toilets",
+            tag: "toilets"
+          },
+          {
+            name: "Showers",
+            tag: "showers"
+          },
+          {
+            name: "Electricity",
+            tag: "electricity"
+          },
+          {
+            name: "Fuel station",
+            tag: "fuel_station"
+          },
+          {
+            name: "Chandler",
+            tag: "chandler"
+          },
+          {
+            name: "Laundrette",
+            tag: "laundrette"
+          },
+          {
+            name: "Boatyard",
+            tag: "boatyard"
+          },
+          {
+            name: "Slipway",
+            tag: "slipway"
+          },
+          {
+            name: "Boat hoist",
+            tag: "boat_hoist"
+          },
+          {
+            name: "Visitor berth",
+            tag: "visitor_berth"
+          }
+        ];
         controls = (
           <div className="scenario-controls">
             <Grid fluid={true}>
@@ -370,16 +439,30 @@ export const Scenario = createReactClass({
                   <PageHeader>{"Harbours"}</PageHeader>
                 </Row>
                 <Row>
-                  <Checkbox>{"Toilets"}</Checkbox>
-                  <Checkbox>{"Showers"}</Checkbox>
-                  <Checkbox>{"Electricity"}</Checkbox>
-                  <Checkbox>{"Fuel station"}</Checkbox>
-                  <Checkbox>{"Chandler"}</Checkbox>
-                  <Checkbox>{"Laundrette"}</Checkbox>
-                  <Checkbox>{"Boatyard"}</Checkbox>
-                  <Checkbox>{"Slipway"}</Checkbox>
-                  <Checkbox>{"Boat hoist"}</Checkbox>
-                  <Checkbox>{"Visitor berth"}</Checkbox>
+                  {facilities.map((fac, i) => {
+                    return (
+                      <Checkbox
+                        key={i}
+                        checked={this.state.showFacilities.includes(fac.tag)}
+                        onChange={e => {
+                          let showFacilities = new Set(
+                            this.state.showFacilities
+                          );
+                          showFacilities.has(fac.tag)
+                            ? showFacilities.delete(fac.tag)
+                            : showFacilities.add(fac.tag);
+                          this.setState(
+                            {
+                              showFacilities: Array.from(showFacilities)
+                            },
+                            this._getHarbours
+                          );
+                        }}
+                      >
+                        {fac.name}
+                      </Checkbox>
+                    );
+                  })}
                 </Row>
               </Col>
             </Grid>
@@ -387,6 +470,40 @@ export const Scenario = createReactClass({
         );
         break;
       case "dangers":
+        const dangers = [
+          {
+            name: "Isolated dangers",
+            tag: "isolatedDangers"
+          },
+          {
+            name: "Lateral signs",
+            tag: "lateralSigns"
+          },
+          {
+            name: "Cardinal signs",
+            tag: "cardinalSigns"
+          },
+          {
+            name: "Special purpose signs",
+            tag: "specialPurposeSigns"
+          },
+          {
+            name: "Lights",
+            tag: "lights"
+          },
+          {
+            name: "Rocks",
+            tag: "rocks"
+          },
+          {
+            name: "Wrecks",
+            tag: "wrecks"
+          },
+          {
+            name: "Coast lines",
+            tag: "coastLines"
+          }
+        ];
         controls = (
           <div className="scenario-controls">
             <Grid fluid={true}>
@@ -484,72 +601,28 @@ export const Scenario = createReactClass({
                 </Row>
                 <Row>
                   <h2>{"Choose dangers to show"}</h2>
-                  <Checkbox
-                    checked={this.state.showIsolatedDangers}
-                    onChange={e =>
-                      this.setState({ showIsolatedDangers: e.target.checked })
-                    }
-                  >
-                    {"Isolated dangers"}
-                  </Checkbox>
-                  <Checkbox
-                    checked={this.state.showLateralSigns}
-                    onChange={e =>
-                      this.setState({ showLateralSigns: e.target.checked })
-                    }
-                  >
-                    {"Lateral signs"}
-                  </Checkbox>
-                  <Checkbox
-                    checked={this.state.showCardinalSigns}
-                    onChange={e =>
-                      this.setState({ showCardinalSigns: e.target.checked })
-                    }
-                  >
-                    {"Cardinal signs"}
-                  </Checkbox>
-                  <Checkbox
-                    checked={this.state.showSpecialPurposeSigns}
-                    onChange={e =>
-                      this.setState({
-                        showSpecialPurposeSigns: e.target.checked
-                      })
-                    }
-                  >
-                    {"Special purpose signs"}
-                  </Checkbox>
-                  <Checkbox
-                    checked={this.state.showLights}
-                    onChange={e =>
-                      this.setState({ showLights: e.target.checked })
-                    }
-                  >
-                    {"Lights"}
-                  </Checkbox>
-                  <Checkbox
-                    checked={this.state.showRocks}
-                    onChange={e =>
-                      this.setState({ showRocks: e.target.checked })
-                    }
-                  >
-                    {"Rocks"}
-                  </Checkbox>
-                  <Checkbox
-                    checked={this.state.showWrecks}
-                    onChange={e =>
-                      this.setState({ showWrecks: e.target.checked })
-                    }
-                  >
-                    {"Wrecks"}
-                  </Checkbox>
-                  <Checkbox
-                    checked={this.state.showCoastLines}
-                    onChange={e =>
-                      this.setState({ showCoastLines: e.target.checked })
-                    }
-                  >
-                    {"Coast lines"}
-                  </Checkbox>
+                  {dangers.map((dan, i) => {
+                    return (
+                      <Checkbox
+                        key={i}
+                        checked={this.state.showDangers.includes(dan.tag)}
+                        onChange={e => {
+                          let showDangers = new Set(this.state.showDangers);
+                          showDangers.has(dan.tag)
+                            ? showDangers.delete(dan.tag)
+                            : showDangers.add(dan.tag);
+                          this.setState(
+                            {
+                              showDangers: Array.from(showDangers)
+                            },
+                            () => this._getDangers(dan.tag)
+                          );
+                        }}
+                      >
+                        {dan.name}
+                      </Checkbox>
+                    );
+                  })}
                 </Row>
               </Col>
             </Grid>
@@ -557,6 +630,20 @@ export const Scenario = createReactClass({
         );
         break;
       case "coves":
+        const coves = [
+          {
+            name: "Anchorages",
+            tag: "anchorages"
+          },
+          {
+            name: "Moorings",
+            tag: "moorings"
+          },
+          {
+            name: "Show underwater cables/pipes",
+            tag: "underwaterCableAndPipes"
+          }
+        ];
         controls = (
           <div className="scenario-controls">
             <Grid fluid={true}>
@@ -565,32 +652,26 @@ export const Scenario = createReactClass({
                   <PageHeader>{"Coves"}</PageHeader>
                 </Row>
                 <Row>
-                  <Checkbox
-                    checked={this.state.showAnchorages}
-                    onChange={e =>
-                      this.setState({ showAnchorages: e.target.checked })
-                    }
-                  >
-                    {"Anchorages"}
-                  </Checkbox>
-                  <Checkbox
-                    checked={this.state.showMoorings}
-                    onChange={e =>
-                      this.setState({ showMoorings: e.target.checked })
-                    }
-                  >
-                    {"Moorings"}
-                  </Checkbox>
-                  <Checkbox
-                    checked={this.state.showUnderwaterPipesAndCables}
-                    onChange={e =>
-                      this.setState({
-                        showUnderwaterPipesAndCables: e.target.checked
-                      })
-                    }
-                  >
-                    {"Show underwater cables/pipes"}
-                  </Checkbox>
+                  {coves.map((cov, i) => {
+                    return (
+                      <Checkbox
+                        key={i}
+                        checked={this.state.showCoves.includes(cov.tag)}
+                        onChange={e => {
+                          let showCoves = new Set(this.state.showCoves);
+                          showCoves.has(cov.tag)
+                            ? showCoves.delete(cov.tag)
+                            : showCoves.add(cov.tag);
+                          this.setState(
+                            { showCoves: Array.from(showCoves) },
+                            () => this._getCoves(cov.tag)
+                          );
+                        }}
+                      >
+                        {cov.name}
+                      </Checkbox>
+                    );
+                  })}
                 </Row>
               </Col>
             </Grid>
@@ -636,58 +717,68 @@ export const Scenario = createReactClass({
           }
           wayLine={this.state.scenario === "dangers" ? wayLine : null}
           isolatedDangers={
-            this.state.scenario === "dangers" && this.state.showIsolatedDangers
+            this.state.scenario === "dangers" &&
+            this.state.showDangers.includes("isolatedDangers")
               ? this.state.isolatedDangers
               : null
           }
           lateralSigns={
-            this.state.scenario === "dangers" && this.state.showLateralSigns
+            this.state.scenario === "dangers" &&
+            this.state.showDangers.includes("lateralSigns")
               ? this.state.lateralSigns
               : null
           }
           cardinalSigns={
-            this.state.scenario === "dangers" && this.state.showCardinalSigns
+            this.state.scenario === "dangers" &&
+            this.state.showDangers.includes("cardinalSigns")
               ? this.state.cardinalSigns
               : null
           }
           specialPurposeSigns={
-            this.state.scenario === "dangers" && this.state.showSpecialPurposeSigns
+            this.state.scenario === "dangers" &&
+            this.state.showDangers.includes("specialPurposeSigns")
               ? this.state.specialPurposeSigns
               : null
           }
           lights={
-            this.state.scenario === "dangers" && this.state.showLights
+            this.state.scenario === "dangers" &&
+            this.state.showDangers.includes("lights")
               ? this.state.lights
               : null
           }
           rocks={
-            this.state.scenario === "dangers" && this.state.showRocks
+            this.state.scenario === "dangers" &&
+            this.state.showDangers.includes("rocks")
               ? this.state.rocks
               : null
           }
           wrecks={
-            this.state.scenario === "dangers" && this.state.showWrecks
+            this.state.scenario === "dangers" &&
+            this.state.showDangers.includes("wrecks")
               ? this.state.wrecks
               : null
           }
           coastLines={
-            this.state.scenario === "dangers" && this.state.showCoastLines
+            this.state.scenario === "dangers" &&
+            this.state.showDangers.includes("coastLines")
               ? this.state.coastLines
               : null
           }
           anchorages={
-            this.state.scenario === "coves" && this.state.showAnchorages
+            this.state.scenario === "coves" &&
+            this.state.showCoves.includes("anchorages")
               ? this.state.anchorages
               : null
           }
           moorings={
-            this.state.scenario === "coves" && this.state.showMoorings
+            this.state.scenario === "coves" &&
+            this.state.showCoves.includes("moorings")
               ? this.state.moorings
               : null
           }
           underwaterCablesAndPipes={
             this.state.scenario === "coves" &&
-            this.state.showUnderwaterPipesAndCables
+            this.state.showCoves.includes("underwaterCableAndPipes")
               ? this.state.underwaterCablesAndPipes
               : null
           }
