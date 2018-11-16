@@ -279,11 +279,11 @@ exports.getCoastLines = (req, res, next) => {
     " FROM planet_osm_polygon " +
     " WHERE \"natural\" = 'coastline' " +
     "), buffer AS (" +
-    " SELECT ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1) AS buffer" +
+    " SELECT ST_Transform(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1)::geometry, 3857) AS buffer" +
     ")" +
-    'SELECT cl.osm_id, cl."natural", ST_AsGeoJSON(ST_Intersection(ST_Transform(way, 4326), bu.buffer)) as geometry ' +
+    'SELECT cl.osm_id, cl."natural", ST_AsGeoJSON(ST_Transform(ST_Intersection(cl.way, bu.buffer), 4326)) as geometry ' +
     "FROM coastlines AS cl, buffer AS bu " +
-    "WHERE ST_Intersects(bu.buffer, ST_Transform(way, 4326))"
+    "WHERE ST_Intersects(cl.way, bu.buffer)"
 
   db.query(
     SELECT_COAST_LINES_QUERY,
