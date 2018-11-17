@@ -8,6 +8,7 @@ import { Map } from "./Map";
 import { Grid, Col, Row } from "react-bootstrap";
 import { PageHeader, Checkbox } from "react-bootstrap";
 import { Form, FormControl, Button, InputGroup } from "react-bootstrap";
+import { Tabs, Tab, Table } from "react-bootstrap";
 
 export const Scenario = createReactClass({
   getInitialState() {
@@ -386,6 +387,7 @@ export const Scenario = createReactClass({
 
   render() {
     let controls = null;
+    let tables = null;
     const scenario = this.state.scenario;
     switch (scenario) {
       case "harbours":
@@ -466,6 +468,74 @@ export const Scenario = createReactClass({
                 </Row>
               </Col>
             </Grid>
+          </div>
+        );
+        tables = (
+          <div className="scenario-tables">
+            <Tabs>
+              <Tab eventKey={1} title="T1">
+                <Table striped bordered condensed hover>
+                  <thead>
+                    <tr>
+                      <th>?</th>
+                      <th>First Name</th>
+                      <th>Last Name</th>
+                      <th>Username</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>Mark</td>
+                      <td>Otto</td>
+                      <td>@mdo</td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>Jacob</td>
+                      <td>Thornton</td>
+                      <td>@fat</td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td colSpan="2">Larry the Bird</td>
+                      <td>@twitter</td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </Tab>
+              <Tab eventKey={2} title="T2">
+                <Table striped bordered condensed hover>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>First Name</th>
+                      <th>Last Name</th>
+                      <th>Username</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>Mark</td>
+                      <td>Otto</td>
+                      <td>@mdo</td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>Jacob</td>
+                      <td>Thornton</td>
+                      <td>@fat</td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td colSpan="2">Larry the Bird</td>
+                      <td>@twitter</td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </Tab>
+            </Tabs>
           </div>
         );
         break;
@@ -703,6 +773,7 @@ export const Scenario = createReactClass({
     return (
       <div className="scenario">
         {controls}
+        {tables}
 
         <Map
           onClick={this._handleMapClick}

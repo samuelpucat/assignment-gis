@@ -7,7 +7,22 @@
     position: absolute;
     z-index: 10;
     height: 100%;
-    background-color: white;
     width: 300px;
-    overflow-y: auto
+    overflow-y: auto;
+
+    background-color: white;
+    border: black solid 1px;
+}
+
+.scenario-tables {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 10;
+    height: 25%;
+    width: calc(100% - 300px);
+    overflow-y: auto;
+
+    background-color: white;
+    border: black solid 1px;
 }
