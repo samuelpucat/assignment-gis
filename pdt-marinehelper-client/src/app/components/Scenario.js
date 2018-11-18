@@ -5,6 +5,8 @@ import axios from "axios";
 import "./Scenario.css";
 
 import { Map } from "./Map";
+import { HarboursTable } from "./HarboursTable";
+
 import { Grid, Col, Row } from "react-bootstrap";
 import { PageHeader, Checkbox } from "react-bootstrap";
 import { Form, FormControl, Button, InputGroup } from "react-bootstrap";
@@ -142,7 +144,7 @@ export const Scenario = createReactClass({
           [endPosition.lng, endPosition.lat]
         ]
       };
-      console.log(arg === "isolatedDangers", arg === undefined);
+      
       if (arg === "isolatedDangers" || arg === undefined)
         this._getIsolatedDangers(geojson);
       if (arg === "lateralSigns" || arg === undefined)
@@ -470,74 +472,13 @@ export const Scenario = createReactClass({
             </Grid>
           </div>
         );
-        tables = (
-          <div className="scenario-tables">
-            <Tabs>
-              <Tab eventKey={1} title="T1">
-                <Table striped bordered condensed hover>
-                  <thead>
-                    <tr>
-                      <th>?</th>
-                      <th>First Name</th>
-                      <th>Last Name</th>
-                      <th>Username</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>Mark</td>
-                      <td>Otto</td>
-                      <td>@mdo</td>
-                    </tr>
-                    <tr>
-                      <td>2</td>
-                      <td>Jacob</td>
-                      <td>Thornton</td>
-                      <td>@fat</td>
-                    </tr>
-                    <tr>
-                      <td>3</td>
-                      <td colSpan="2">Larry the Bird</td>
-                      <td>@twitter</td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </Tab>
-              <Tab eventKey={2} title="T2">
-                <Table striped bordered condensed hover>
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>First Name</th>
-                      <th>Last Name</th>
-                      <th>Username</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>Mark</td>
-                      <td>Otto</td>
-                      <td>@mdo</td>
-                    </tr>
-                    <tr>
-                      <td>2</td>
-                      <td>Jacob</td>
-                      <td>Thornton</td>
-                      <td>@fat</td>
-                    </tr>
-                    <tr>
-                      <td>3</td>
-                      <td colSpan="2">Larry the Bird</td>
-                      <td>@twitter</td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </Tab>
-            </Tabs>
-          </div>
-        );
+        if (this.state.harbours) {
+          tables = (
+            <div className="scenario-tables">
+              <HarboursTable harbours={this.state.harbours} />
+            </div>
+          );
+        }
         break;
       case "dangers":
         const dangers = [

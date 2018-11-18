@@ -103,11 +103,8 @@ exports.getAllWithFacilities = (req, res, next) => {
     " )" +
     ' SELECT h."osm_id", h."seamark:type", h."seamark:name", h."seamark:harbour:category", h."name", h.way, string_agg(distinct "seamark:small_craft_facility:category", \';\') AS harbourFacilities ' +
     " FROM harbours AS h " +
-    " CROSS JOIN facilities AS f " +
-    " WHERE (" +
-    "  ST_Contains(h.way, f.way) AND " +
-    "  f.\"seamark:small_craft_facility:category\" SIMILAR TO '%(toilets|showers|electricity|fuel_station|chandler|laundrette|boatyard|slipway|boat_hoist|visitor_berth)%' " +
-    " )" +
+    " LEFT JOIN facilities AS f " +
+    " ON ST_Contains(h.way, f.way) " +
     ' GROUP BY h."osm_id", h."seamark:type", h."seamark:name", h."seamark:harbour:category", h."name", h.way ' +
     ")" +
     'SELECT "osm_id", "seamark:type", "seamark:name", "seamark:harbour:category", "name", ST_AsGeoJSON(ST_Transform(ST_Centroid(way), 4326)) AS center, harbourFacilities ' +
