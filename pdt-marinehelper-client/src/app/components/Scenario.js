@@ -5,12 +5,23 @@ import axios from "axios";
 import "./Scenario.css";
 
 import { Map } from "./Map";
-import { HarboursTable } from "./HarboursTable";
+import { HarboursTable } from "./harbours/HarboursTable";
+import { AnchoragesTable } from "./coves/AnchoragesTable";
+import { MooringsTable } from "./coves/MooringsTable";
+import { UnderwaterCablesAndPipesTable } from "./coves/UnderwaterCablesAndPipesTable";
 
 import { Grid, Col, Row } from "react-bootstrap";
 import { PageHeader, Checkbox } from "react-bootstrap";
 import { Form, FormControl, Button, InputGroup } from "react-bootstrap";
 import { Tabs, Tab, Table } from "react-bootstrap";
+import { IsolatedDangersTable } from "./dangers/IsolatedDangersTable";
+import { LateralSignsTable } from "./dangers/LateralSignsTable";
+import { CardinalSignsTable } from "./dangers/CardinalSignsTable";
+import { SpecialPurposeSignsTable } from "./dangers/SpecialPurposeSignsTable";
+import { LightsTable } from "./dangers/LightsTable";
+import { RocksTable } from "./dangers/RocksTable";
+import { WrecksTable } from "./dangers/WrecksTable";
+import { CoastLinesTable } from "./dangers/CoastLinesTable";
 
 export const Scenario = createReactClass({
   getInitialState() {
@@ -144,7 +155,7 @@ export const Scenario = createReactClass({
           [endPosition.lng, endPosition.lat]
         ]
       };
-      
+
       if (arg === "isolatedDangers" || arg === undefined)
         this._getIsolatedDangers(geojson);
       if (arg === "lateralSigns" || arg === undefined)
@@ -303,7 +314,7 @@ export const Scenario = createReactClass({
   _getCoves(arg) {
     if (arg === "anchorages" || arg === undefined) this._getAnchorages();
     if (arg === "moorings" || arg === undefined) this._getMoorings();
-    if (arg === "underwaterCableAndPipes" || arg === undefined)
+    if (arg === "underwaterCablesAndPipes" || arg === undefined)
       this._getUnderwaterCablesAndPipes();
   },
 
@@ -350,7 +361,7 @@ export const Scenario = createReactClass({
   },
 
   _getUnderwaterCablesAndPipes() {
-    if (this.state.showCoves.includes("underwaterCableAndPipes")) {
+    if (this.state.showCoves.includes("underwaterCablesAndPipes")) {
       axios
         .get("http://localhost:3001/coves/getNearbyUnderwaterCablesAndPipes", {
           params: {
@@ -484,35 +495,43 @@ export const Scenario = createReactClass({
         const dangers = [
           {
             name: "Isolated dangers",
-            tag: "isolatedDangers"
+            tag: "isolatedDangers",
+            table: <IsolatedDangersTable dangers={this.state.isolatedDangers} />
           },
           {
             name: "Lateral signs",
-            tag: "lateralSigns"
+            tag: "lateralSigns",
+            table: <LateralSignsTable dangers={this.state.lateralSigns} />
           },
           {
             name: "Cardinal signs",
-            tag: "cardinalSigns"
+            tag: "cardinalSigns",
+            table: <CardinalSignsTable dangers={this.state.cardinalSigns} />
           },
           {
             name: "Special purpose signs",
-            tag: "specialPurposeSigns"
+            tag: "specialPurposeSigns",
+            table: <SpecialPurposeSignsTable dangers={this.state.specialPurposeSigns} />
           },
           {
             name: "Lights",
-            tag: "lights"
+            tag: "lights",
+            table: <LightsTable dangers={this.state.lights}/>
           },
           {
             name: "Rocks",
-            tag: "rocks"
+            tag: "rocks",
+            table: <RocksTable dangers={this.state.rocks}/>
           },
           {
             name: "Wrecks",
-            tag: "wrecks"
+            tag: "wrecks",
+            table: <WrecksTable dangers={this.state.wrecks}/>
           },
           {
             name: "Coast lines",
-            tag: "coastLines"
+            tag: "coastLines",
+            table: <CoastLinesTable dangers={this.state.coastLines}/>
           }
         ];
         controls = (
@@ -639,20 +658,57 @@ export const Scenario = createReactClass({
             </Grid>
           </div>
         );
+        if (
+          (this.state.isolatedDangers &&
+            this.state.showDangers.includes("isolatedDangers")) ||
+          (this.state.lateralSigns &&
+            this.state.showDangers.includes("lateralSigns")) ||
+          (this.state.cardinalSigns &&
+            this.state.showDangers.includes("cardinalSigns")) ||
+          (this.state.specialPurposeSigns &&
+            this.state.showDangers.includes("specialPurposeSigns")) ||
+          (this.state.lights && this.state.showDangers.includes("lights")) ||
+          (this.state.rocks && this.state.showDangers.includes("rocks")) ||
+          (this.state.wrecks && this.state.showDangers.includes("wrecks")) ||
+          (this.state.coastLines && this.state.showDangers.includes("coastLines"))
+        ) {
+          tables = (
+            <div className="scenario-tables">
+              <Tabs style={{ height: "100%" }} id={"dangersTabs"}>
+                {dangers.map((dan, i) => {
+                  if (
+                    this.state[dan.tag] &&
+                    this.state.showDangers.includes(dan.tag)
+                  )
+                    return (
+                      <Tab key={i} eventKey={i} title={dan.name}>
+                        {dan.table}
+                      </Tab>
+                    );
+                })}
+              </Tabs>
+            </div>
+          );
+        }
         break;
       case "coves":
         const coves = [
           {
             name: "Anchorages",
-            tag: "anchorages"
+            tag: "anchorages",
+            table: <AnchoragesTable anchorages={this.state.anchorages} />
           },
           {
             name: "Moorings",
-            tag: "moorings"
+            tag: "moorings",
+            table: <MooringsTable moorings={this.state.moorings} />
           },
           {
             name: "Show underwater cables/pipes",
-            tag: "underwaterCableAndPipes"
+            tag: "underwaterCablesAndPipes",
+            table: <UnderwaterCablesAndPipesTable
+            cablesAndPipes={this.state.underwaterCablesAndPipes}
+          />
           }
         ];
         controls = (
@@ -688,6 +744,32 @@ export const Scenario = createReactClass({
             </Grid>
           </div>
         );
+        if (
+          (this.state.anchorages &&
+            this.state.showCoves.includes("anchorages")) ||
+          (this.state.moorings && this.state.showCoves.includes("moorings")) ||
+          (this.state.underwaterCablesAndPipes &&
+            this.state.showCoves.includes("underwaterCablesAndPipes"))
+        ) {
+          tables = (
+            <div className="scenario-tables">
+              <Tabs style={{ height: "100%" }} id={"covesTabs"}>
+                {coves.map((cov, i) => {
+                  if (
+                    this.state[cov.tag] &&
+                    this.state.showCoves.includes(cov.tag)
+                  )
+                    return (
+                      <Tab key={i} eventKey={i} title={cov.name}>
+                        {cov.table}
+                      </Tab>
+                    );
+                })}
+              </Tabs>
+            </div>
+          );
+        }
+
         break;
       default:
         controls = null;
@@ -790,7 +872,7 @@ export const Scenario = createReactClass({
           }
           underwaterCablesAndPipes={
             this.state.scenario === "coves" &&
-            this.state.showCoves.includes("underwaterCableAndPipes")
+            this.state.showCoves.includes("underwaterCablesAndPipes")
               ? this.state.underwaterCablesAndPipes
               : null
           }

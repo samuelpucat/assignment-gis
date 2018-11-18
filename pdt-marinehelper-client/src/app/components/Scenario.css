@@ -19,10 +19,18 @@
     bottom: 0;
     right: 0;
     z-index: 10;
-    height: 25%;
+    height: 35%;
     width: calc(100% - 300px);
     /*overflow-y: auto;*/
 
     background-color: white;
     border: black solid 1px;
+}
+
+.scenario-tables * > .tab-content {
+    height: calc(100% - 42px);
+}
+
+.scenario-tables * > .tab-content > .tab-pane {
+    height: 100%;
 }

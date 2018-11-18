@@ -5,41 +5,42 @@ import PropTypes from "prop-types";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 
-export const HarboursTable = createReactClass({
+export const WrecksTable = createReactClass({
   propTypes: {
-    harbours: PropTypes.array
+    dangers: PropTypes.array
   },
 
   render() {
     return (
       <ReactTable
-        data={this.props.harbours}
+        data={this.props.dangers}
         columns={[
           {
             Header: "osm_id",
             accessor: "osm_id"
           },
           {
-            Header: "name",
-            accessor: "name"
+            Header: "seamark:type",
+            accessor: "seamark:type"
           },
           {
             Header: "seamark:name",
             accessor: "seamark:name"
           },
           {
-            Header: "seamark:harbour:category",
-            accessor: "seamark:harbour:category"
+            Header: "seamark:wreck:category",
+            accessor: "seamark:wreck:category"
           },
           {
-            Header: "harbourfacilities",
-            accessor: "harbourfacilities"
-          }
+            Header: "sport",
+            accessor: "sport"
+          },
         ]}
         className="-striped -highlight"
         style={{
           height: "100%"
         }}
+        minRows = {0}
       />
     );
   }
