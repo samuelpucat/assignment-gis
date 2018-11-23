@@ -1,0 +1,1 @@
+osm2pgsql -m -d gis -U postgres -H localhost split.osm --keep-coastlines 

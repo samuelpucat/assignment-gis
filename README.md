@@ -20,8 +20,8 @@ Build a map-based application, which lets the user see geo-based data on a map a
 
 Fill in (either in English, or in Slovak):
 
-**Application description**: `<fill in>`
+**Application description**: Application for recreational sailors - simplyfies the planning of safe sailing.
 
-**Data source**: `<fill in>`
+**Data source**: [Open Street Maps](https://www.openstreetmap.org/) Croatian seas.
 
-**Technologies used**: `<fill in>`
+**Technologies used**: FE - React, BE - NodeJS, DB - PostgreSQL with PostGIS extension
