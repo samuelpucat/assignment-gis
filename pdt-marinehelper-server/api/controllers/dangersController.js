@@ -15,12 +15,14 @@ exports.getIsolatedDangers = (req, res, next) => {
   };
 
   const SELECT_ISOLATED_DANGERS_QUERY =
+    "WITH buffer AS ( "+
+    " SELECT ST_Transform(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1)::geometry, 3857) AS buffer "+
+    ") "+
     'SELECT osm_id, "seamark:type", "seamark:name", ' +
     ' "seamark:light:height", "seamark:light:colour", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
     " ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
-    "FROM planet_osm_point " +
-    "WHERE \"seamark:type\" like '%_isolated_danger' AND " +
-    "ST_Intersects(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), ST_Transform(way, 4326))";
+    "FROM planet_osm_point, buffer bu " +
+    "WHERE \"seamark:type\" like '%_isolated_danger' AND ST_Intersects(bu.buffer, way)";
 
   db.query(
     SELECT_ISOLATED_DANGERS_QUERY,
@@ -50,12 +52,14 @@ exports.getLateralSigns = (req, res, next) => {
     buffer: req.body.buffer
   };
   let SELECT_LATERAL_SIGNS_QUERY =
+    "WITH buffer AS ( "+
+    " SELECT ST_Transform(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1)::geometry, 3857) AS buffer "+
+    ") "+
     'SELECT osm_id, "seamark:type", "seamark:name", ' +
     ' "seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
     " ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
-    "FROM planet_osm_point " +
-    "WHERE \"seamark:type\" like '%_lateral' AND " +
-    "ST_Intersects(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), ST_Transform(way, 4326))";
+    "FROM planet_osm_point, buffer bu " +
+    "WHERE \"seamark:type\" like '%_lateral' AND ST_Intersects(bu.buffer, way)";
 
   db.query(
     SELECT_LATERAL_SIGNS_QUERY,
@@ -85,12 +89,15 @@ exports.getCardinalSigns = (req, res, next) => {
     buffer: req.body.buffer
   };
   let SELECT_CARDINAL_SIGNS_QUERY =
+    "WITH buffer AS ( "+
+    " SELECT ST_Transform(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1)::geometry, 3857) AS buffer "+
+    ") "+
     'SELECT osm_id, "seamark:type", "seamark:name", "seamark:buoy_cardinal:category", ' +
     ' "seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
     " ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
-    "FROM planet_osm_point " +
+    "FROM planet_osm_point, buffer bu " +
     "WHERE \"seamark:type\" like '%_cardinal' AND " +
-    "ST_Intersects(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), ST_Transform(way, 4326))";
+    "ST_Intersects(bu.buffer, way)";
 
   db.query(
     SELECT_CARDINAL_SIGNS_QUERY,
@@ -120,12 +127,15 @@ exports.getSpecialPurposeSigns = (req, res, next) => {
     buffer: req.body.buffer
   };
   let SELECT_SPECIAL_PURPOSE_SIGNS_QUERY =
+    "WITH buffer AS ( "+
+    " SELECT ST_Transform(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1)::geometry, 3857) AS buffer "+
+    ") "+
     'SELECT osm_id, "seamark:type", "seamark:name", "seamark:buoy_cardinal:category", ' +
     ' "seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
     " ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
-    "FROM planet_osm_point " +
+    "FROM planet_osm_point, buffer bu " +
     "WHERE \"seamark:type\" like '%_special_purpose' AND " +
-    "ST_Intersects(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), ST_Transform(way, 4326))";
+    "ST_Intersects(bu.buffer, way)";
 
   db.query(
     SELECT_SPECIAL_PURPOSE_SIGNS_QUERY,
@@ -155,13 +165,16 @@ exports.getLights = (req, res, next) => {
     buffer: req.body.buffer
   };
   let SELECT_LIGHTS_QUERY =
+    "WITH buffer AS ( "+
+    " SELECT ST_Transform(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1)::geometry, 3857) AS buffer "+
+    ") "+
     'SELECT osm_id, "seamark:type", "seamark:name", ' +
     ' "seamark:light:height", "seamark:light:colour", "seamark:light:multiple", "seamark:light:range", "seamark:light:group", "seamark:light:period", ' +
     ' "seamark:light:sector_start", "seamark:light:sector_end", "seamark:light:category", "seamark:light:visibility", "seamark:light:exhibition", ' +
     " ST_AsGeoJSON(ST_Transform(way, 4326)) as center " +
-    "FROM planet_osm_point " +
+    "FROM planet_osm_point, buffer bu " +
     "WHERE \"seamark:type\" like 'light_%' AND " +
-    "ST_Intersects(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), ST_Transform(way, 4326))";
+    "ST_Intersects(bu.buffer, way)";
 
   db.query(
     SELECT_LIGHTS_QUERY,
@@ -201,10 +214,12 @@ exports.getRocks = (req, res, next) => {
     " ST_AsGeoJSON(ST_Transform(ST_Centroid(way), 4326)) as center, way " +
     " FROM planet_osm_point " +
     " WHERE \"seamark:type\" = 'rock'" +
-    ")" +
+    "), buffer AS ( "+
+    " SELECT ST_Transform(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1)::geometry, 3857) AS buffer "+
+    ") "+
     'SELECT osm_id, "seamark:type", "seamark:name", "seamark:rock:water_level", center ' +
-    "FROM rocks " +
-    "WHERE ST_Intersects(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), ST_Transform(way, 4326))";
+    "FROM rocks, buffer bu " +
+    "WHERE ST_Intersects(bu.buffer, way)";
 
   db.query(
     SELECT_LIGHTS_QUERY,
@@ -234,13 +249,12 @@ exports.getWrecks = (req, res, next) => {
     buffer: req.body.buffer
   };
   let SELECT_WRECKS_QUERY =
+    "WITH buffer AS ( "+
+    " SELECT ST_Transform(ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1)::geometry, 3857) AS buffer "+
+    ") "+
     'SELECT osm_id,  name, "seamark:type", "seamark:name", "seamark:wreck:category", "sport", ST_AsGeoJSON(ST_Transform(way, 4326)) as center ' +
-    "FROM planet_osm_point " +
-    "WHERE \"seamark:type\" = 'wreck' AND " +
-    "ST_Intersects(" +
-    "ST_Buffer(ST_GeomFromGeoJSON($2)::geography, $1), " +
-    "ST_Transform(way, 4326)" +
-    ")";
+    "FROM planet_osm_point, buffer bu " +
+    "WHERE \"seamark:type\" = 'wreck' AND ST_Intersects(bu.buffer, way)";
 
   db.query(
     SELECT_WRECKS_QUERY,
