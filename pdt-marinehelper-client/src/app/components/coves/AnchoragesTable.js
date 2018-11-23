@@ -11,9 +11,12 @@ export const AnchoragesTable = createReactClass({
   },
 
   render() {
+    let anchorages = this.props.anchorages.map(a => {
+      return {...a, st_distance: a.st_distance.toFixed(2)}
+    });
     return (
       <ReactTable
-        data={this.props.anchorages}
+        data={anchorages}
         columns={[
           {
             Header: "osm_id",
@@ -28,7 +31,7 @@ export const AnchoragesTable = createReactClass({
             accessor: "seamark:anchorage:category"
           },
           {
-            Header: "st_distance",
+            Header: "st_distance [m]",
             accessor: "st_distance"
           }
         ]}

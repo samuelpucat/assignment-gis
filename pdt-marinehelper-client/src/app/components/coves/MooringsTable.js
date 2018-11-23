@@ -11,9 +11,12 @@ export const MooringsTable = createReactClass({
   },
 
   render() {
+    let moorings = this.props.moorings.map(m => {
+      return {...m, st_distance: m.st_distance.toFixed(2)}
+    });
     return (
       <ReactTable
-        data={this.props.moorings}
+        data={moorings}
         columns={[
           {
             Header: "osm_id",

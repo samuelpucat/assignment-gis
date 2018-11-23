@@ -11,9 +11,12 @@ export const UnderwaterCablesAndPipesTable = createReactClass({
   },
 
   render() {
+    let cablesAndPipes = this.props.cablesAndPipes.map(cap => {
+      return {...cap, st_distance: cap.st_distance.toFixed(2)}
+    });
     return (
       <ReactTable
-        data={this.props.cablesAndPipes}
+        data={cablesAndPipes}
         columns={[
           {
             Header: "osm_id",
