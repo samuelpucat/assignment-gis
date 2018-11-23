@@ -7,11 +7,11 @@ This application is for recreational sailors to simplify the planning of safe sa
 
 These are some screenshots of application:
 
-![Screenshot](documentation-files/harbours.png)
-![Screenshot](documentation-files/dangers.png)
-![Screenshot](documentation-files/coves.png)
+![Screenshot](documentation-files/harbours.PNG)
+![Screenshot](documentation-files/dangers.PNG)
+![Screenshot](documentation-files/coves.PNG)
 
-Application consists of [frontend side](#frontend) written in React using react-mapbox-gl wrapper for mapbox and [server side](#server) written in NodeJS providing [REST API](#api).
+Application consists of [frontend side](#frontend) written in React using react-mapbox-gl wrapper for mapbox and [backend side](#backend) written in NodeJS providing [REST API](#api).
 
 # Frontend
 
@@ -70,7 +70,7 @@ body example:
 	"facilities": [
 		"toilets", "fuel_station"
 	],
-  "buffer": 100
+  	"buffer": 100
 }
 ```
 
@@ -81,18 +81,25 @@ Get harbour by osm_id:
 
 Get all isolated dangers intersecting given line (buffered)
 `POST /dangers/getIsolatedDangers`
+
 Get all lateral signs intersecting given line (buffered)
 `POST /dangers/getLateralSigns`
+
 Get all cardinal signs intersecting given line (buffered)
 `POST /dangers/getCardinalSigns`
+
 Get all special purpose signs intersecting given line (buffered)
 `POST /dangers/getSpecialPurposeSigns`
+
 Get all lights intersecting given line (buffered)
 `POST /dangers/getLights`
+
 Get all rocks intersecting given line (buffered)
 `POST /dangers/getRocks`
+
 Get all wrecks intersecting given line (buffered)
 `POST /dangers/getWrecks`
+
 Get all coast lines intersecting given line (buffered)
 `POST /dangers/getCoastLines`
 
@@ -111,8 +118,10 @@ body example for all queries
 
 Get anchorages within given distance from given position
 `GET /coves/getNearbyAnchorages?lat=43.2099645672&lng=16.3720972&maxDistance=30000`
+
 Get moorings within given distance from given position
 `GET /coves/getNearbyMoorings?lat=43.2099645672&lng=16.3720972&maxDistance=30000`
+
 Get underwater cables and pipes within given distance from given position - can't anchor there
 `GET /coves/getNearbyUnderwaterCablesAndPipes?lat=43.2099645672&lng=16.3720972&maxDistance=30000`
 
