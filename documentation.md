@@ -1,5 +1,7 @@
 # Overview
 
+**Name:** Samuel Púčať
+
 This application is for recreational sailors to simplify the planning of safe sailing. Sailor has a choice of these scenarios:
 - Harbours - show all harbours in area offering chosen services (showers, laundrette, fuel station...)
 - Dangers - show chosen dangers (isolated dangers, rocks, coast lines) on selected cruise line

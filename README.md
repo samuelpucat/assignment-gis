@@ -20,6 +20,8 @@ Build a map-based application, which lets the user see geo-based data on a map a
 
 Fill in (either in English, or in Slovak):
 
+**Name and surname**: Samuel Púčať
+
 **Application description**: Application for recreational sailors - simplyfies the planning of safe sailing.
 
 **Data source**: [Open Street Maps](https://www.openstreetmap.org/) Croatian seas.
